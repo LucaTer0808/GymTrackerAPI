@@ -38,7 +38,7 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private String role;
 
-    @Column(name = "reserved_email")
+    @Column(name = "reserved_email", unique = true)
     @Nullable
     private String reservedEmail;
     @Nullable
