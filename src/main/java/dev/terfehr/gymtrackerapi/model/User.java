@@ -38,8 +38,8 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private String role;
 
-    @Column(name = "reserved_email", unique = true)
     @Nullable
+    @Column(name = "reserved_email", unique = true)
     private String reservedEmail;
     @Nullable
     @Column(name = "verification_code", unique = true)
