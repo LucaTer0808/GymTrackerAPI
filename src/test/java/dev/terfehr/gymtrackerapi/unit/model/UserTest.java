@@ -20,7 +20,7 @@ public class UserTest {
 
     @BeforeEach
     void setUp() {
-        this.user = new User("Max", "Mustermann", email, "hashedPassword", testCode);
+        this.user = new User("Max", "Mustermann", "a_username", email, "hashedPassword", testCode);
     }
 
     @Test
