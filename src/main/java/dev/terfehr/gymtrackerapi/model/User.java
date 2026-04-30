@@ -80,8 +80,6 @@ public class User implements UserDetails {
     @Column(name = "locked", nullable = false)
     private boolean locked;
 
-    public User() {}
-
     public User(String firstName, String lastName, String username, String email, String hashedPassword, String verificationCode) {
         this.firstName = firstName;
         this.lastName = lastName;
