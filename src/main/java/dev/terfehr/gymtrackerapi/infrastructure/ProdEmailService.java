@@ -5,13 +5,15 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class EmailService {
+@Profile("prod")
+public class ProdEmailService implements  EmailServiceI {
 
     private final JavaMailSender mailSender;
 
@@ -21,7 +23,7 @@ public class EmailService {
     @Value("${app.email-address}")
     private String from;
 
-    public EmailService(JavaMailSender mailSender) {
+    public ProdEmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
@@ -51,5 +53,9 @@ public class EmailService {
         } catch (MessagingException e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    public void sendVerificationEmail(String email) {
+
     }
 }

@@ -56,6 +56,7 @@ public class User implements UserDetails {
     @Column(name = "hashed_password", nullable = false)
     private String hashedPassword;
 
+    @Getter
     @Column(name = "role", nullable = false)
     private String role;
 

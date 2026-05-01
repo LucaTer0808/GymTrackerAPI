@@ -1,6 +1,8 @@
 package dev.terfehr.gymtrackerapi.controller;
 
+import dev.terfehr.gymtrackerapi.dto.LoginDTO;
 import dev.terfehr.gymtrackerapi.dto.UserDTO;
+import dev.terfehr.gymtrackerapi.dto.request.LoginRequest;
 import dev.terfehr.gymtrackerapi.dto.request.RegisterRequest;
 import dev.terfehr.gymtrackerapi.service.AuthService;
 import jakarta.validation.Valid;
@@ -20,7 +22,6 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@RequestBody @Valid RegisterRequest request) {
-
         UserDTO dto = this.authService.registerUser(
                 request.firstName(),
                 request.lastName(),
@@ -34,6 +35,20 @@ public class AuthController {
 
     @PatchMapping(VERIFY_PATH + "/{verificationCode}")
     public ResponseEntity<UserDTO> verify(@PathVariable String verificationCode) {
-        return ResponseEntity.ok(null);
+        UserDTO dto = this.authService.verifyUser(
+                verificationCode
+        );
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginDTO> login(@RequestBody @Valid LoginRequest request) {
+        LoginDTO dto = this.authService.login(
+                request.username(),
+                request.password()
+        );
+
+        return ResponseEntity.ok(dto);
     }
 }
