@@ -2,7 +2,7 @@ package dev.terfehr.gymtrackerapi.controller;
 
 import dev.terfehr.gymtrackerapi.dto.UserDTO;
 import dev.terfehr.gymtrackerapi.dto.request.RegisterRequest;
-import dev.terfehr.gymtrackerapi.service.RegistrationService;
+import dev.terfehr.gymtrackerapi.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +14,26 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     public static final String AUTH_PATH = "/auth";
+    public static final String VERIFY_PATH = "/verify";
 
-    private final RegistrationService registrationService;
+    private final AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@RequestBody @Valid RegisterRequest request) {
-        return null;
+
+        UserDTO dto = this.authService.registerUser(
+                request.firstName(),
+                request.lastName(),
+                request.username(),
+                request.email(),
+                request.password()
+        );
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @PatchMapping(VERIFY_PATH + "/{verificationCode}")
+    public ResponseEntity<UserDTO> verify(@PathVariable String verificationCode) {
+        return ResponseEntity.ok(null);
     }
 }
