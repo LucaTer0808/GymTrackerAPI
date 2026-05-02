@@ -1,5 +1,10 @@
 package dev.terfehr.gymtrackerapi.infrastructure;
 
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+
+@Service
+@Profile("dev")
 public class DevEmailService implements EmailServiceI {
     public void sendRegistrationEmail(String email, String verificationCode) {
         System.out.println("Sending registration email to " + email + " with verification code " + verificationCode);

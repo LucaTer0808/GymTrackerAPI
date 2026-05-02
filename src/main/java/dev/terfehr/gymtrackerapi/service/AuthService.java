@@ -136,8 +136,14 @@ public class AuthService {
             throw new  AuthenticationException("Given passwords do not match! Please send another request");
         }
 
+        if (!password.matches(User.PASSWORD_REGEX)) {
+            throw new AuthenticationException("The password does not satisfy the current safety requirements. " +
+                    "Please use at least 8 characters, one uppercase and one lowercase letter, one number and one special character!");
+        }
+
         User user = userRepository.findByPasswordChangeCode(passwordChangeCode)
-                .orElseThrow(() -> new ResourceNotFoundException("There is no user with the password change code " + passwordChangeCode));
+                .orElseThrow(() -> new ResourceNotFoundException("There is no user with the password change code " + passwordChangeCode
+                + ". No password change can be executed!"));
 
         String encodedPassword = passwordEncoder.encode(password);
 
