@@ -3,10 +3,7 @@ package dev.terfehr.gymtrackerapi.service;
 import dev.terfehr.gymtrackerapi.dto.LoginDTO;
 import dev.terfehr.gymtrackerapi.dto.RefreshAccessTokenDTO;
 import dev.terfehr.gymtrackerapi.dto.UserDTO;
-import dev.terfehr.gymtrackerapi.exception.AuthenticationException;
-import dev.terfehr.gymtrackerapi.exception.CredentialsTakenException;
-import dev.terfehr.gymtrackerapi.exception.ResourceNotFoundException;
-import dev.terfehr.gymtrackerapi.exception.VerificationException;
+import dev.terfehr.gymtrackerapi.exception.*;
 import dev.terfehr.gymtrackerapi.infrastructure.EmailServiceI;
 import dev.terfehr.gymtrackerapi.infrastructure.UUIDService;
 import dev.terfehr.gymtrackerapi.model.User;
@@ -15,11 +12,11 @@ import dev.terfehr.gymtrackerapi.security.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NullMarked;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @NullMarked
 @Service
@@ -42,7 +39,7 @@ public class AuthService {
             throw new CredentialsTakenException("The username " +  username + " is already taken");
         }
 
-        if (!password.matches(password2)) {
+        if (!password.equals(password2)) {
             throw new AuthenticationException("Given passwords do not match! Please send another registration request");
         }
 
@@ -58,9 +55,18 @@ public class AuthService {
         return new UserDTO(user);
     }
 
-    public UserDTO verifyUser(String verificationCode) throws ResourceNotFoundException, VerificationException {
+    public UserDTO verifyUser(String verificationCode) throws ResourceNotFoundException, VerificationException, CredentialsTakenException {
         User user = userRepository.findByVerificationCode(verificationCode)
                 .orElseThrow(() -> new ResourceNotFoundException("There is no user with the verification code " + verificationCode));
+
+        String reservedEmail = user.getReservedEmail();
+        assert  reservedEmail != null;
+        boolean emailTaken = userRepository.existsByEmail(reservedEmail);
+
+        if (emailTaken) {
+            throw new CredentialsTakenException("There already is a user with the email " +
+                    reservedEmail);
+        }
 
         user.enable(verificationCode, Instant.now());
 
@@ -99,5 +105,43 @@ public class AuthService {
         String accessToken = jwtService.generateAccessToken(user);
 
         return new RefreshAccessTokenDTO(user, accessToken);
+    }
+
+    public String requestPasswordReset(String email) {
+        Optional<User> userByEmail = userRepository.findByEmail(email);
+        Optional<User> userByReservedEmail =  userRepository.findByReservedEmail(email);
+        String message = "A mail has been sent to the user with the given email address if it exists! It contains a link to reset the password";
+
+        boolean noUserByEmail = userByEmail.isEmpty();
+
+        if (noUserByEmail && userByReservedEmail.isEmpty()) {
+            return message;
+        }
+
+        User user = noUserByEmail ? userByReservedEmail.get() : userByEmail.get();
+
+        String passwordChangeCode = uuidService.generateUniquePasswordChangeCode();
+
+        user.requestPasswordChange(passwordChangeCode);
+
+        userRepository.save(user);
+
+        emailService.sendRequestPasswordChangeEmail(email, passwordChangeCode);
+
+        return message;
+    }
+
+    public void confirmPasswordReset(String passwordChangeCode, String password, String password2) {
+        if (!password.equals(password2)) {
+            throw new  AuthenticationException("Given passwords do not match! Please send another request");
+        }
+
+        User user = userRepository.findByPasswordChangeCode(passwordChangeCode)
+                .orElseThrow(() -> new ResourceNotFoundException("There is no user with the password change code " + passwordChangeCode));
+
+        String encodedPassword = passwordEncoder.encode(password);
+
+        assert encodedPassword != null;
+        user.verifyPasswordChange(encodedPassword, passwordChangeCode, Instant.now());
     }
 }

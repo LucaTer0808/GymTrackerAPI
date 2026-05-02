@@ -22,4 +22,13 @@ public class UUIDService {
 
         return code;
     }
+
+    public String generateUniquePasswordChangeCode() {
+        String code;
+        do {
+            code = UUID.randomUUID().toString();
+        } while(!userRepository.existsByPasswordChangeCode(code));
+
+        return code;
+    }
 }

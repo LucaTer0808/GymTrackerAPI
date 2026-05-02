@@ -8,4 +8,8 @@ public class DevEmailService implements EmailServiceI {
     public void sendVerificationEmail(String email) {
         System.out.println("Sending verification email to " + email);
     }
+
+    public void sendRequestPasswordChangeEmail(String email, String passwordChangeCode) {
+        System.out.println("Sending password change request email to " + email + " with code " + passwordChangeCode);
+    }
 }

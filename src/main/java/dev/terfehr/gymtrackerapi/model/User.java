@@ -24,12 +24,14 @@ public class User implements UserDetails {
     public static final String ROLE_USER = "ROLE_USER";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final Duration REGISTRATION_EXPIRATION = Duration.ofDays(1);
+    public static final Duration CHANGE_PASSWORD_DURATION = Duration.ofHours(1);
     public static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$"; // 1 UC, 1 LW, 8 digits, 1 Number, 1 extra char
     public static final int MAX_NAME_LENGTH = 50;
     public static final int MIN_USERNAME_LENGTH = 8;
     public static final int MAX_USERNAME_LENGTH = 50;
     public static final int MAX_EMAIL_LENGTH = 100;
     public static final int MAX_VERIFICATION_CODE_LENGTH = 50;
+    public static final int MAX_CHANGE_PASSWORD_CODE_LENGTH = 50;
 
     @Id
     @Getter
@@ -75,6 +77,16 @@ public class User implements UserDetails {
     @Column(name = "verification_code_expiration")
     private Instant verificationCodeExpiration;
 
+    @Nullable
+    @Getter
+    @Column(name = "password_change_code", unique = true, length = MAX_CHANGE_PASSWORD_CODE_LENGTH)
+    private String passwordChangeCode;
+
+    @Nullable
+    @Getter
+    @Column(name = "password_change_code_expiration")
+    private Instant passwordChangeCodeExpiration;
+
     @Column(name = "enabled", nullable = false)
     private boolean enabled;
 
@@ -88,6 +100,8 @@ public class User implements UserDetails {
         this.reservedEmail = email;
         this.hashedPassword = hashedPassword;
         this.verificationCode = verificationCode;
+        this.passwordChangeCode = null;
+        this.passwordChangeCodeExpiration = null;
         this.role = ROLE_USER;
         this.verificationCodeExpiration = Instant.now().plus(REGISTRATION_EXPIRATION);
         this.enabled = false;
@@ -141,5 +155,26 @@ public class User implements UserDetails {
         this.verificationCodeExpiration = null;
 
         this.enabled = true;
+    }
+
+    public void requestPasswordChange(String passwordChangeCode) {
+        this.passwordChangeCode = passwordChangeCode;
+        this.passwordChangeCodeExpiration = Instant.now().plus(CHANGE_PASSWORD_DURATION);
+    }
+
+    public void verifyPasswordChange(String password, String passwordChangeCode, Instant now) throws VerificationException {
+        assert this.passwordChangeCode != null;
+        if (!this.passwordChangeCode.equals(passwordChangeCode)) {
+            throw new VerificationException("The given password change code does not match the one of the user!");
+        }
+
+        assert this.passwordChangeCodeExpiration != null;
+        if (this.passwordChangeCodeExpiration.isBefore(now)) {
+            throw new VerificationException("The given password change code has expired! Please apply for a renewal!");
+        }
+
+        this.hashedPassword = password;
+        this.passwordChangeCode = null;
+        this.passwordChangeCodeExpiration = null;
     }
 }

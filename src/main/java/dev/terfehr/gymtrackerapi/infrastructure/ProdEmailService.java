@@ -34,20 +34,16 @@ public class ProdEmailService implements  EmailServiceI {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
 
-            helper.setTo(email);
-            helper.setSubject("GymTracker - Bestätige deine Registrierung");
-            helper.setFrom(from);
-
+            String subject = "GymTracker - Bestätige deine Registrierung";
             String htmlContent = """
-            <h3>Willkommen beim GymTracker!</h3>
-            <p>Schön, dass du dabei bist. Bitte klicke auf den untenstehenden Link, um dein Konto zu verifizieren:</p>
-            <a href="%s" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Konto verifizieren</a>
-            <p>Oder kopiere diesen Link in deinen Browser:</p>
-            <p>%s</p>
-        """.formatted(verificationUrl, verificationUrl);
+                <h3>Willkommen beim GymTracker!</h3>
+                <p>Schön, dass du dabei bist. Bitte klicke auf den untenstehenden Link, um dein Konto zu verifizieren:</p>
+                <a href="%s" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Konto verifizieren</a>
+                <p>Oder kopiere diesen Link in deinen Browser:</p>
+                <p>%s</p>
+                """.formatted(verificationUrl, verificationUrl);
 
-            helper.setText(htmlContent, true);
-
+            configureMimeMessageHelper(helper, email, subject, htmlContent);
             mailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
@@ -56,6 +52,48 @@ public class ProdEmailService implements  EmailServiceI {
     }
 
     public void sendVerificationEmail(String email) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+            String subject = "GymTracker - Sie haben sich erfolgreich verifiziert";
+            String htmlContent = """
+                    <h3>Ihre Verifizierung war erfolgreich</h3>
+                    <p>Sie können den GymTracker jetzt ohne Einschränkungen nutzen. Viel Spaß!</p>
+                    """;
 
+            configureMimeMessageHelper(helper, email, subject, htmlContent);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error(e.getMessage(), e);
+        }
     }
+
+    public void sendRequestPasswordChangeEmail(String email, String changePasswordCode) {
+        final String passwordChangeUrl = this.baseUrl + AuthController.CONFIRM_PASSWORD_RESET_PATH + "/" +  changePasswordCode;
+
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+            String subject = "GymTracker - Setze dein Password zurück";
+            String htmlContent = """
+                    <h3>Eine Anfrage zum Zurücksetzen deines Passworts ist bei uns eingegangen!</h3>
+                    <p>Kommt diese Anfrage von dir? Falls ja, clicke auf den untenstehenden Link, um dein Passwort zurückzusetzen</p>
+                    <a href="%s" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Passwort zurücksetzen</a>
+                    <p>Oder kopiere diesen Link in deinen Browser:</p>
+                    <p>%s</p>
+                    """.formatted(passwordChangeUrl, email);
+
+            configureMimeMessageHelper(helper, email, subject, htmlContent);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    private void configureMimeMessageHelper(MimeMessageHelper helper, String email, String subject, String htmlContent) throws MessagingException {
+        helper.setTo(email);
+        helper.setSubject(subject);
+        helper.setFrom(from);
+        helper.setText(htmlContent);
+;    }
 }

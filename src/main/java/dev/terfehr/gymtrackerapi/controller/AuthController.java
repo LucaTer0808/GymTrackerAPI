@@ -3,9 +3,7 @@ package dev.terfehr.gymtrackerapi.controller;
 import dev.terfehr.gymtrackerapi.dto.LoginDTO;
 import dev.terfehr.gymtrackerapi.dto.RefreshAccessTokenDTO;
 import dev.terfehr.gymtrackerapi.dto.UserDTO;
-import dev.terfehr.gymtrackerapi.dto.request.LoginRequest;
-import dev.terfehr.gymtrackerapi.dto.request.RefreshAccessTokenRequest;
-import dev.terfehr.gymtrackerapi.dto.request.RegisterRequest;
+import dev.terfehr.gymtrackerapi.dto.request.*;
 import dev.terfehr.gymtrackerapi.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -19,6 +17,7 @@ public class AuthController {
 
     public static final String AUTH_PATH = "/auth";
     public static final String VERIFY_PATH = "/verify";
+    public static final String CONFIRM_PASSWORD_RESET_PATH = "/reset-password/verify";
 
     private final AuthService authService;
 
@@ -62,5 +61,14 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(dto);
+    }
+
+    @PatchMapping("/password-reset/request")
+    public ResponseEntity<String> requestPasswordReset(@RequestBody @Valid RequestPasswordResetRequest request) {
+        String message = this.authService.requestPasswordReset(
+                request.email()
+        );
+
+        return ResponseEntity.ok(message);
     }
 }
