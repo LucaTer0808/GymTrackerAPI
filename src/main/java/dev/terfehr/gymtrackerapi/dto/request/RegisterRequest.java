@@ -35,5 +35,8 @@ public record RegisterRequest(
         String email,
 
         @Password(message = "The password is too weak")
-        String password
+        String password,
+
+        @Password(message = "The password is too weak")
+        String password2
 ) {}

@@ -1,8 +1,10 @@
 package dev.terfehr.gymtrackerapi.controller;
 
 import dev.terfehr.gymtrackerapi.dto.LoginDTO;
+import dev.terfehr.gymtrackerapi.dto.RefreshAccessTokenDTO;
 import dev.terfehr.gymtrackerapi.dto.UserDTO;
 import dev.terfehr.gymtrackerapi.dto.request.LoginRequest;
+import dev.terfehr.gymtrackerapi.dto.request.RefreshAccessTokenRequest;
 import dev.terfehr.gymtrackerapi.dto.request.RegisterRequest;
 import dev.terfehr.gymtrackerapi.service.AuthService;
 import jakarta.validation.Valid;
@@ -27,7 +29,8 @@ public class AuthController {
                 request.lastName(),
                 request.username(),
                 request.email(),
-                request.password()
+                request.password(),
+                request.password2()
         );
 
         return ResponseEntity.ok(dto);
@@ -47,6 +50,15 @@ public class AuthController {
         LoginDTO dto = this.authService.login(
                 request.username(),
                 request.password()
+        );
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/access-token")
+    public ResponseEntity<RefreshAccessTokenDTO> refreshAccessToken(@RequestBody @Valid RefreshAccessTokenRequest request) {
+        RefreshAccessTokenDTO dto = this.authService.refreshAccessToken(
+                request.refreshToken()
         );
 
         return ResponseEntity.ok(dto);
