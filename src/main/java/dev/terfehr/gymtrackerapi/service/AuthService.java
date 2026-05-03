@@ -151,4 +151,21 @@ public class AuthService {
         assert encodedPassword != null;
         user.verifyPasswordChange(encodedPassword, passwordChangeCode, Instant.now());
     }
+
+    public UserDTO confirmEmailChange(String emailChangeCode) throws VerificationException {
+        User user = userRepository.findByEmailChangeCode(emailChangeCode)
+                .orElseThrow(() -> new ResourceNotFoundException("There is no user with the email change code: " + emailChangeCode));
+
+        String reservedEmail = user.getReservedEmail();
+        assert  reservedEmail != null;
+
+        if (userRepository.existsByEmail(reservedEmail)) {
+            throw new CredentialsTakenException("There already is a user with the email " + reservedEmail);
+        }
+
+        user.confirmEmailChange(emailChangeCode, Instant.now());
+        userRepository.save(user);
+
+        return new UserDTO(user);
+    }
 }

@@ -31,4 +31,13 @@ public class UUIDService {
 
         return code;
     }
+
+    public String generateUniqueEmailChangeCode() {
+        String code;
+        do {
+            code = UUID.randomUUID().toString();
+        } while(!userRepository.existsByEmailChangeCode(code));
+
+        return code;
+    }
 }

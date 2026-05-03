@@ -25,6 +25,7 @@ public class User implements UserDetails {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final Duration REGISTRATION_EXPIRATION = Duration.ofDays(1);
     public static final Duration CHANGE_PASSWORD_DURATION = Duration.ofHours(1);
+    public static final Duration CHANGE_EMAIL_DURATION = Duration.ofDays(1);
     public static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,256}$"; // 1 UC, 1 LC, 8 chars, 1 Number, 1 extra char
     public static final int MAX_NAME_LENGTH = 50;
     public static final int MIN_USERNAME_LENGTH = 8;
@@ -32,6 +33,7 @@ public class User implements UserDetails {
     public static final int MAX_EMAIL_LENGTH = 100;
     public static final int MAX_VERIFICATION_CODE_LENGTH = 50;
     public static final int MAX_CHANGE_PASSWORD_CODE_LENGTH = 50;
+    public static final int MAX_EMAIL_CHANGE_CODE_LENGTH = 50;
 
     @Id
     @Getter
@@ -87,6 +89,16 @@ public class User implements UserDetails {
     @Column(name = "password_change_code_expiration")
     private Instant passwordChangeCodeExpiration;
 
+    @Nullable
+    @Getter
+    @Column(name = "email_change_code", unique = true, length = MAX_EMAIL_CHANGE_CODE_LENGTH)
+    private String emailChangeCode;
+
+    @Nullable
+    @Getter
+    @Column(name = "email_change_code_expiration")
+    private Instant emailChangeCodeExpiration;
+
     @Column(name = "enabled", nullable = false)
     private boolean enabled;
 
@@ -100,10 +112,12 @@ public class User implements UserDetails {
         this.reservedEmail = email;
         this.hashedPassword = hashedPassword;
         this.verificationCode = verificationCode;
+        this.verificationCodeExpiration = Instant.now().plus(REGISTRATION_EXPIRATION);
         this.passwordChangeCode = null;
         this.passwordChangeCodeExpiration = null;
+        this.emailChangeCode = null;
+        this.emailChangeCodeExpiration = null;
         this.role = ROLE_USER;
-        this.verificationCodeExpiration = Instant.now().plus(REGISTRATION_EXPIRATION);
         this.enabled = false;
         this.locked = false;
     }
@@ -187,8 +201,26 @@ public class User implements UserDetails {
     }
 
     public void requestEmailChange(String reservedEmail, String emailChangeCode) {
-        this.verificationCode = emailChangeCode;
-        this.verificationCodeExpiration = Instant.now().plus(REGISTRATION_EXPIRATION);
+        assert this.reservedEmail == null; // only gets called if user is enabled already
+        this.emailChangeCode = emailChangeCode;
+        this.emailChangeCodeExpiration = Instant.now().plus(CHANGE_EMAIL_DURATION);
         this.reservedEmail = reservedEmail;
+    }
+
+    public void confirmEmailChange(String emailChangeCode, Instant now) throws VerificationException {
+        assert this.emailChangeCode != null;
+        if (!this.emailChangeCode.equals(emailChangeCode)) {
+            throw new VerificationException("The given email change code does not match the one of the user!");
+        }
+
+        assert this.emailChangeCodeExpiration != null;
+        if (!this.emailChangeCodeExpiration.isBefore(now)) {
+            throw new VerificationException("The given email change code has expired! Please apply for a renewal!");
+        }
+
+        this.email = this.reservedEmail;
+        this.reservedEmail = null;
+        this.emailChangeCode = null;
+        this.emailChangeCodeExpiration = null;
     }
 }

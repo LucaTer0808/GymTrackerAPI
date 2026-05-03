@@ -68,11 +68,11 @@ public class UserService {
             throw new CredentialsTakenException("The email " + desiredEmail + " is already in use");
         }
 
-        String changeEmailCode = uuidService.generateUniqueVerificationCode();
-        authUser.requestEmailChange(desiredEmail, changeEmailCode);
+        String emailChangeCode = uuidService.generateUniqueEmailChangeCode();
+        authUser.requestEmailChange(desiredEmail, emailChangeCode);
         userRepository.save(authUser);
 
-        emailService.sendRequestEmailChangeEmail(desiredEmail, changeEmailCode);
+        emailService.sendRequestEmailChangeEmail(desiredEmail, emailChangeCode);
 
         return new UserDTO(authUser);
     }
