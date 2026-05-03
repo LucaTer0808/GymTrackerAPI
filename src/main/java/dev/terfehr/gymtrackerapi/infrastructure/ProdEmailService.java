@@ -112,6 +112,23 @@ public class ProdEmailService implements  EmailServiceI {
         }
     }
 
+    public void sendAccountDeletionEmail(String email) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+            String subject = "GymTracker - Your account has been deleted!";
+            String htmlContent = """
+                    <h3>We are sorry to see you go</h3>
+                    <p>We hope you enjoyed GymTracker and would love to see you again!</p>
+                    """;
+
+            configureMimeMessageHelper(helper, email, subject, htmlContent);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
     private void configureMimeMessageHelper(MimeMessageHelper helper, String email, String subject, String htmlContent) throws MessagingException {
         helper.setTo(email);
         helper.setSubject(subject);

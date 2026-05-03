@@ -90,6 +90,12 @@ public class UserService {
             throw new AuthenticationException("The provided password does not match the current users' one");
         }
 
+        if (authUser.isEnabled()) {
+            String email = authUser.getEmail();
+            assert email != null;
+            emailService.sendAccountDeletionEmail(email);
+        }
+
         userRepository.delete(authUser);
     }
 }

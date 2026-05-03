@@ -21,4 +21,8 @@ public class DevEmailService implements EmailServiceI {
     public void sendRequestEmailChangeEmail(String email, String emailChangeCode) {
         System.out.println("Sending email change request email to " + email + " with code " + emailChangeCode);
     }
+
+    public void sendAccountDeletionEmail(String email) {
+        System.out.println("Sending account deletion email to " + email);
+    }
 }

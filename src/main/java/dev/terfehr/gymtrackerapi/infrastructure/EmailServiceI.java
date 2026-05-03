@@ -5,4 +5,5 @@ public interface EmailServiceI {
     void sendVerificationEmail(String email);
     void sendRequestPasswordChangeEmail(String email, String passwordChangeCode);
     void sendRequestEmailChangeEmail(String email, String emailChangeCode);
+    void sendAccountDeletionEmail(String email);
 }
