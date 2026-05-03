@@ -1,6 +1,7 @@
 package dev.terfehr.gymtrackerapi.controller;
 
 import dev.terfehr.gymtrackerapi.dto.UserDTO;
+import dev.terfehr.gymtrackerapi.dto.request.ChangeNameRequest;
 import dev.terfehr.gymtrackerapi.dto.request.ChangePasswordRequest;
 import dev.terfehr.gymtrackerapi.dto.request.ChangeUsernameRequest;
 import dev.terfehr.gymtrackerapi.dto.request.RequestEmailChangeRequest;
@@ -9,6 +10,7 @@ import dev.terfehr.gymtrackerapi.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -53,5 +55,14 @@ public class MeController {
         );
 
         return ResponseEntity.ok(dto);
+    }
+
+    @PatchMapping("/name")
+    public ResponseEntity<UserDTO> changeName(@AuthenticationPrincipal User authUser, @RequestBody @Valid ChangeNameRequest request) {
+        UserDTO dto = userService.changeName(
+                authUser,
+                request.newFirstName(),
+                request.newLastName()
+        );
     }
 }

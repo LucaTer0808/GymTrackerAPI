@@ -9,6 +9,7 @@ import dev.terfehr.gymtrackerapi.model.User;
 import dev.terfehr.gymtrackerapi.repository.UserRepositoryI;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,13 @@ public class UserService {
         userRepository.save(authUser);
 
         emailService.sendRequestEmailChangeEmail(desiredEmail, emailChangeCode);
+
+        return new UserDTO(authUser);
+    }
+
+    public UserDTO changeName(User authUser, @Nullable String newFirstName, @Nullable String newLastName) {
+        authUser.changeName(newFirstName, newLastName);
+        userRepository.save(authUser);
 
         return new UserDTO(authUser);
     }

@@ -226,4 +226,14 @@ public class User implements UserDetails {
         this.emailChangeCode = null;
         this.emailChangeCodeExpiration = null;
     }
+
+    public void changeName(@Nullable String newFirstName, @Nullable String newLastName) {
+        if (newFirstName != null) {
+            this.firstName = newFirstName;
+        }
+
+        if (newLastName != null) {
+            this.lastName = newLastName;
+        }
+    }
 }
