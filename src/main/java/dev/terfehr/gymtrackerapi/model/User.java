@@ -66,7 +66,7 @@ public class User implements UserDetails {
 
     @Nullable
     @Getter
-    @Column(name = "reserved_email", unique = true)
+    @Column(name = "reserved_email")
     private String reservedEmail;
 
     @Nullable
@@ -201,7 +201,6 @@ public class User implements UserDetails {
     }
 
     public void requestEmailChange(String reservedEmail, String emailChangeCode) {
-        assert this.reservedEmail == null; // only gets called if user is enabled already
         this.emailChangeCode = emailChangeCode;
         this.emailChangeCodeExpiration = Instant.now().plus(CHANGE_EMAIL_DURATION);
         this.reservedEmail = reservedEmail;

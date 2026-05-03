@@ -111,16 +111,14 @@ public class AuthService {
 
     public String requestPasswordReset(String email) {
         Optional<User> userByEmail = userRepository.findByEmail(email);
-        Optional<User> userByReservedEmail =  userRepository.findByReservedEmail(email);
         String message = "A mail has been sent to the user with the given email address if it exists! It contains a link to reset the password";
 
-        boolean noUserByEmail = userByEmail.isEmpty();
 
-        if (noUserByEmail && userByReservedEmail.isEmpty()) {
+        if (userByEmail.isEmpty()) {
             return message;
         }
 
-        User user = noUserByEmail ? userByReservedEmail.get() : userByEmail.get();
+        User user = userByEmail.get();
 
         String passwordChangeCode = uuidService.generateUniquePasswordChangeCode();
 
