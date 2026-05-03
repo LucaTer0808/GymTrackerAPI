@@ -14,5 +14,5 @@ public record ChangeUsernameRequest(
         String username,
 
         @NotBlank(message = "The given password must not be null!")
-        String password
+        String currentPassword
 ) {}

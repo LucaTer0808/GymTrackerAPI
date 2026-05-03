@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record ChangePasswordRequest(
         @NotBlank(message = "The old password must not be null or an empty string")
-        String oldPassword,
+        String currentPassword,
 
         @NotBlank(message = "The new password must not be null or an empty string")
         @Password(message = "The new password does not satisfy the safety requirements")

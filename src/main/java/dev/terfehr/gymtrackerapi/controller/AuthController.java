@@ -20,6 +20,7 @@ public class AuthController {
     public static final String AUTH_PATH = "/auth";
     public static final String VERIFY_PATH = "/verify";
     public static final String CONFIRM_PASSWORD_RESET_PATH = "/reset-password/verify";
+    public static final String CONFIRM_EMAIL_CHANGE_PATH = "/email/verify";
 
     private final AuthService authService;
 
@@ -72,5 +73,14 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(message);
+    }
+
+    @PatchMapping(CONFIRM_EMAIL_CHANGE_PATH + "/{changeEmailCode}")
+    public ResponseEntity<UserDTO> confirmEmailChange(@PathVariable String changeEmailCode) {
+        UserDTO user = this.authService.confirmEmailChange(
+                changeEmailCode
+        );
+
+        return ResponseEntity.ok(user);
     }
 }

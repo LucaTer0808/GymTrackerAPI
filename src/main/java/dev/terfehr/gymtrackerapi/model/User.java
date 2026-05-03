@@ -185,4 +185,10 @@ public class User implements UserDetails {
     public void changePassword(String hashedPassword) {
         this.hashedPassword = hashedPassword;
     }
+
+    public void requestEmailChange(String reservedEmail, String emailChangeCode) {
+        this.verificationCode = emailChangeCode;
+        this.verificationCodeExpiration = Instant.now().plus(REGISTRATION_EXPIRATION);
+        this.reservedEmail = reservedEmail;
+    }
 }

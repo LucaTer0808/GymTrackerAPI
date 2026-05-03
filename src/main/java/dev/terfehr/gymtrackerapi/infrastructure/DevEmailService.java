@@ -17,4 +17,8 @@ public class DevEmailService implements EmailServiceI {
     public void sendRequestPasswordChangeEmail(String email, String passwordChangeCode) {
         System.out.println("Sending password change request email to " + email + " with code " + passwordChangeCode);
     }
+
+    public void sendRequestEmailChangeEmail(String email, String emailChangeCode) {
+        System.out.println("Sending email change request email to " + email + " with code " + emailChangeCode);
+    }
 }

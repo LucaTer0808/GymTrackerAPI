@@ -81,7 +81,29 @@ public class ProdEmailService implements  EmailServiceI {
                     <a href="%s" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Passwort zurücksetzen</a>
                     <p>Oder kopiere diesen Link in deinen Browser:</p>
                     <p>%s</p>
-                    """.formatted(passwordChangeUrl, email);
+                    """.formatted(passwordChangeUrl, passwordChangeUrl);
+
+            configureMimeMessageHelper(helper, email, subject, htmlContent);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    public void sendRequestEmailChangeEmail(String email, String emailChangeCode) {
+        final String emailChangeUrl = this.baseUrl + AuthController.CONFIRM_EMAIL_CHANGE_PATH + "/" + emailChangeCode;
+
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+            String subject = "GymTracker - Verify your email change";
+            String htmlContent = """
+                    <h3>We received a request to change your email address</h3>
+                    <p>Did you send this request? If so, please click the following link to verify your new email address</p>
+                    <a href="%s" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">Passwort zurücksetzen</a>
+                    <p>Oder kopiere diesen Link in deinen Browser:</p>
+                    <p>%s</p>
+                    """.formatted(emailChangeUrl, emailChangeUrl);
 
             configureMimeMessageHelper(helper, email, subject, htmlContent);
             mailSender.send(mimeMessage);
