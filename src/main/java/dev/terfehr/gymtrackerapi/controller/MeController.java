@@ -1,10 +1,7 @@
 package dev.terfehr.gymtrackerapi.controller;
 
 import dev.terfehr.gymtrackerapi.dto.UserDTO;
-import dev.terfehr.gymtrackerapi.dto.request.ChangeNameRequest;
-import dev.terfehr.gymtrackerapi.dto.request.ChangePasswordRequest;
-import dev.terfehr.gymtrackerapi.dto.request.ChangeUsernameRequest;
-import dev.terfehr.gymtrackerapi.dto.request.RequestEmailChangeRequest;
+import dev.terfehr.gymtrackerapi.dto.request.*;
 import dev.terfehr.gymtrackerapi.model.User;
 import dev.terfehr.gymtrackerapi.service.UserService;
 import jakarta.validation.Valid;
@@ -64,5 +61,14 @@ public class MeController {
                 request.newFirstName(),
                 request.newLastName()
         );
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping
+    public String deleteUser(@AuthenticationPrincipal User authUser, @RequestBody @Valid DeleteUserRequest request) {
+        userService.deleteUser(authUser,request.currentPassword());
+
+        return "Your account has been deleted!";
     }
 }

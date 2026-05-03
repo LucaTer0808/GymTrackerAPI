@@ -84,4 +84,12 @@ public class UserService {
 
         return new UserDTO(authUser);
     }
+
+    public void deleteUser(User authUser, String currentPassword) {
+        if (!passwordEncoder.matches(currentPassword, authUser.getPassword())) {
+            throw new AuthenticationException("The provided password does not match the current users' one");
+        }
+
+        userRepository.delete(authUser);
+    }
 }
