@@ -214,11 +214,11 @@ public class User implements UserDetails {
         }
 
         assert this.emailChangeCodeExpiration != null;
-        if (!this.emailChangeCodeExpiration.isBefore(now)) {
+        if (this.emailChangeCodeExpiration.isBefore(now)) {
             throw new VerificationException("The given email change code has expired! Please apply for a renewal!");
         }
 
-        if (!this.enabled) {
+        if (!this.enabled) { // should actually never happen but just to be sure!
             throw new VerificationException("The user is not yet verified and must not change his email until he is!");
         }
 
