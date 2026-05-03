@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @NullMarked
 @Service
 @AllArgsConstructor
+@Transactional
 public class AuthService {
 
 
@@ -142,8 +144,7 @@ public class AuthService {
         }
 
         User user = userRepository.findByPasswordChangeCode(passwordChangeCode)
-                .orElseThrow(() -> new ResourceNotFoundException("There is no user with the password change code " + passwordChangeCode
-                + ". No password change can be executed!"));
+                .orElseThrow(() -> new ResourceNotFoundException("There is no user with the password change code. No password change can be executed!"));
 
         String encodedPassword = passwordEncoder.encode(password);
 

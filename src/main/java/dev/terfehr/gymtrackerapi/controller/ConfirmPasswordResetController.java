@@ -2,10 +2,12 @@ package dev.terfehr.gymtrackerapi.controller;
 
 import dev.terfehr.gymtrackerapi.service.AuthService;
 import lombok.AllArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+@NullMarked
 @Controller
 @RequestMapping(AuthController.AUTH_PATH)
 @AllArgsConstructor

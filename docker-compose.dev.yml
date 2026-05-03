@@ -4,7 +4,7 @@ services:
     container_name: gymtracker-db
     environment:
       - POSTGRES_DB=gymtracker
-      - POSTGRES_USER=admin
+      - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}
       - POSTGRES_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data

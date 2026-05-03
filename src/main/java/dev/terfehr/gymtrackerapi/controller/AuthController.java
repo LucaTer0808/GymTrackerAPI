@@ -7,9 +7,11 @@ import dev.terfehr.gymtrackerapi.dto.request.*;
 import dev.terfehr.gymtrackerapi.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@NullMarked
 @RestController
 @RequestMapping(AuthController.AUTH_PATH)
 @AllArgsConstructor

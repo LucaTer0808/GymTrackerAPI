@@ -1,5 +1,6 @@
 package dev.terfehr.gymtrackerapi.security;
 
+import dev.terfehr.gymtrackerapi.model.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,14 +47,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            User user = (User) this.userDetailsService.loadUserByUsername(username);
 
-            if (!jwtService.isTokenValid(jwt, userDetails)) {
+            if (!jwtService.isTokenValid(jwt, user)) {
                 chain.doFilter(request, response);
                 return;
             }
 
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
             chain.doFilter(request, response);

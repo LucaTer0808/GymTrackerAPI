@@ -25,7 +25,7 @@ public class User implements UserDetails {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final Duration REGISTRATION_EXPIRATION = Duration.ofDays(1);
     public static final Duration CHANGE_PASSWORD_DURATION = Duration.ofHours(1);
-    public static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$"; // 1 UC, 1 LW, 8 digits, 1 Number, 1 extra char
+    public static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,256}$"; // 1 UC, 1 LC, 8 chars, 1 Number, 1 extra char
     public static final int MAX_NAME_LENGTH = 50;
     public static final int MIN_USERNAME_LENGTH = 8;
     public static final int MAX_USERNAME_LENGTH = 50;
@@ -176,5 +176,13 @@ public class User implements UserDetails {
         this.hashedPassword = password;
         this.passwordChangeCode = null;
         this.passwordChangeCodeExpiration = null;
+    }
+
+    public void changeUsername(String username) {
+        this.username = username;
+    }
+
+    public void changePassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
     }
 }
