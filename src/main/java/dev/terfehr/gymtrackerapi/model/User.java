@@ -218,6 +218,10 @@ public class User implements UserDetails {
             throw new VerificationException("The given email change code has expired! Please apply for a renewal!");
         }
 
+        if (!this.enabled) {
+            throw new VerificationException("The user is not yet verified and must not change his email until he is!");
+        }
+
         this.email = this.reservedEmail;
         this.reservedEmail = null;
         this.emailChangeCode = null;
