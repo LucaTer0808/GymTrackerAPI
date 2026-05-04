@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
+// TODO: enabled shoult NOT be confused with verified. Add an additional field verified and use enabled as another metric
 @Entity
 @Table(name = "users")
 @NullMarked
