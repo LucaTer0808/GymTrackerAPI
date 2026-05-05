@@ -2,7 +2,6 @@ package dev.terfehr.gymtrackerapi.service;
 
 import dev.terfehr.gymtrackerapi.dto.UserDTO;
 import dev.terfehr.gymtrackerapi.exception.AuthenticationException;
-import dev.terfehr.gymtrackerapi.exception.CredentialsTakenException;
 import dev.terfehr.gymtrackerapi.infrastructure.EmailServiceI;
 import dev.terfehr.gymtrackerapi.infrastructure.UUIDService;
 import dev.terfehr.gymtrackerapi.model.User;

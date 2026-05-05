@@ -32,13 +32,13 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public UserDTO registerUser(String firstName, String lastName, String username, String email, String password, String password2) throws CredentialsTakenException {
+    public UserDTO registerUser(String firstName, String lastName, String username, String email, String password, String password2) throws DatabaseConflictException {
         if (userRepository.existsByEmail(email)) {
-            throw new CredentialsTakenException("The email address " +  email + " is already taken");
+            throw new DatabaseConflictException("The email address " +  email + " is already taken");
         }
 
         if (userRepository.existsByUsername(username)) {
-            throw new CredentialsTakenException("The username " +  username + " is already taken");
+            throw new DatabaseConflictException("The username " +  username + " is already taken");
         }
 
         if (!password.equals(password2)) {
@@ -57,7 +57,7 @@ public class AuthService {
         return new UserDTO(user);
     }
 
-    public UserDTO verifyUser(String verificationCode) throws ResourceNotFoundException, VerificationException, CredentialsTakenException {
+    public UserDTO verifyUser(String verificationCode) throws ResourceNotFoundException, VerificationException, DatabaseConflictException {
         User user = userRepository.findByVerificationCode(verificationCode)
                 .orElseThrow(() -> new ResourceNotFoundException("There is no user with the verification code " + verificationCode));
 
@@ -66,7 +66,7 @@ public class AuthService {
         boolean emailTaken = userRepository.existsByEmail(reservedEmail);
 
         if (emailTaken) {
-            throw new CredentialsTakenException("There already is a user with the email " +
+            throw new DatabaseConflictException("There already is a user with the email " +
                     reservedEmail);
         }
 
@@ -150,7 +150,7 @@ public class AuthService {
         user.verifyPasswordChange(encodedPassword, passwordChangeCode, Instant.now());
     }
 
-    public UserDTO confirmEmailChange(String emailChangeCode) throws VerificationException {
+    public UserDTO confirmEmailChange(String emailChangeCode) throws VerificationException, DatabaseConflictException {
         User user = userRepository.findByEmailChangeCode(emailChangeCode)
                 .orElseThrow(() -> new ResourceNotFoundException("There is no user with the email change code: " + emailChangeCode));
 
@@ -158,7 +158,7 @@ public class AuthService {
         assert  reservedEmail != null;
 
         if (userRepository.existsByEmail(reservedEmail)) {
-            throw new CredentialsTakenException("There already is a user with the email " + reservedEmail);
+            throw new DatabaseConflictException("There already is a user with the email " + reservedEmail);
         }
 
         user.confirmEmailChange(emailChangeCode, Instant.now());

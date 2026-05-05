@@ -13,7 +13,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -110,6 +112,9 @@ public class User implements UserDetails {
     @Column(name = "locked", nullable = false)
     private boolean locked;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private Set<Exercise> exercises;
+
     public User(String firstName, String lastName, String username, String email, String hashedPassword, String verificationCode) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -126,6 +131,8 @@ public class User implements UserDetails {
         this.role = "ROLE_" + ROLE_USER;
         this.enabled = true;
         this.locked = false;
+
+        this.exercises = new HashSet<>();
     }
 
     @Override
@@ -241,5 +248,13 @@ public class User implements UserDetails {
         if (newLastName != null) {
             this.lastName = newLastName;
         }
+    }
+
+    public Exercise addExercise(String name) {
+        assert this.exercises.stream().noneMatch(exercise -> exercise.getName().equalsIgnoreCase(name));
+
+        Exercise exercise = new Exercise(this, name);
+        this.exercises.add(exercise);
+        return exercise;
     }
 }
