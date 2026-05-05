@@ -11,6 +11,7 @@ import org.jspecify.annotations.NullMarked;
 public class Day {
 
     // TODO: A day has multiple exercises. If a day is deleted, the exercises should remain!
+    // TODO: Add a mapping entity that maps day to exercise, like a ExerciseSlot for a day or so.
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
