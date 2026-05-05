@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -24,5 +25,14 @@ public class Split {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "split", orphanRemoval = true, cascade = CascadeType.ALL)
     Set<Day> days;
 
-    // TODO: A Split has Days and a days has exercises. if a split is deleted so are the days but NOT the exercises!!
+    public Split(String name, Set<String> dayNames) {
+        this.name = name;
+
+        Set<Day> days = new HashSet<>();
+        for (String dayName : dayNames) {
+            days.add(new Day(this, dayName));
+        }
+
+        this.days = days;
+    }
 }

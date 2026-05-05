@@ -6,6 +6,6 @@ import jakarta.validation.constraints.Size;
 
 public record CreateExerciseRequest(
         @NotBlank(message = "The name of the exercise must not be null or an empty string!")
-        @Size(max = Exercise.MAX_USERNAME_LENGTH, message = "The name of the exercise must be no longer than " + Exercise.MAX_USERNAME_LENGTH + " characters long")
+        @Size(max = Exercise.MAX_NAME_LENGTH, message = "The name of the exercise must be no longer than " + Exercise.MAX_NAME_LENGTH + " characters long")
         String name
 ) {}

@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "exercises", uniqueConstraints = {
         @UniqueConstraint(
@@ -17,7 +20,7 @@ import org.jspecify.annotations.Nullable;
 @NoArgsConstructor
 public class Exercise {
 
-    public static final int MAX_USERNAME_LENGTH = 50;
+    public static final int MAX_NAME_LENGTH = 50;
 
     @Id
     @Getter
@@ -33,10 +36,13 @@ public class Exercise {
     @Column(name = "name", nullable = false)
     private String name;
 
-    // TODO: Add Set with Execution or some kind
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "exercise", orphanRemoval = true, cascade = CascadeType.ALL)
+    private Set<ExerciseSlot> exerciseSlots;
 
     public Exercise(User user, String name)  {
         this.user = user;
         this.name = name;
+        this.exerciseSlots = new HashSet<>();
     }
 }

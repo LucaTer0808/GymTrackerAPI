@@ -264,4 +264,10 @@ public class User implements UserDetails {
         this.exercises.add(exercise);
         return exercise;
     }
+
+    public Split changeSplit(String name, Set<String> dayNames) {
+        Split split = new Split(name, dayNames);
+        this.split = split;
+        return split;
+    }
 }
