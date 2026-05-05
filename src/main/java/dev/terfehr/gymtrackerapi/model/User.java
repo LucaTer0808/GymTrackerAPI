@@ -112,6 +112,12 @@ public class User implements UserDetails {
     @Column(name = "locked", nullable = false)
     private boolean locked;
 
+    @Getter
+    @Nullable
+    @OneToOne(cascade = CascadeType.ALL,  fetch = FetchType.LAZY)
+    @JoinColumn(name = "split_id")
+    private Split split;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<Exercise> exercises;
 
@@ -133,6 +139,7 @@ public class User implements UserDetails {
         this.locked = false;
 
         this.exercises = new HashSet<>();
+        this.split = null;
     }
 
     @Override
