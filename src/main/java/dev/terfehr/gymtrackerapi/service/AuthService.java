@@ -70,7 +70,7 @@ public class AuthService {
                     reservedEmail);
         }
 
-        user.enable(verificationCode, Instant.now());
+        user.verify(verificationCode, Instant.now());
 
         userRepository.save(user);
 

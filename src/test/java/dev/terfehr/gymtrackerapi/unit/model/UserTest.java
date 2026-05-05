@@ -24,42 +24,42 @@ public class UserTest {
     }
 
     @Test
-    @DisplayName("Enable with enabled user")
-    void testEnableWithEnabledUser() {
-        this.user.enable(testCode, Instant.now());
+    @DisplayName("Verify with enabled user")
+    void testVerifyWithEnabledUser() {
+        this.user.verify(testCode, Instant.now());
 
-        assertThatThrownBy(() -> user.enable(testCode, Instant.now()))
+        assertThatThrownBy(() -> user.verify(testCode, Instant.now()))
                 .isInstanceOf(VerificationException.class)
-                .hasMessageContaining("is already enabled!");
+                .hasMessageContaining("is already verified!");
     }
 
     @Test
-    @DisplayName("Enable with wrong verification code")
-    void testEnableWithWrongVerificationCode() {
-        assertThatThrownBy(() -> user.enable(wrongTestCode, Instant.now()))
+    @DisplayName("Verify with wrong verification code")
+    void testVerifyWithWrongVerificationCode() {
+        assertThatThrownBy(() -> user.verify(wrongTestCode, Instant.now()))
                 .isInstanceOf(VerificationException.class)
                 .hasMessageContaining("The given verification code does not match the one of the user!");
     }
 
     @Test
-    @DisplayName("Enabling with expired verification code")
-    void testEnableWithExpiredVerificationCode() {
-        assertThatThrownBy(() -> user.enable(testCode, Instant.now().plus(Duration.ofDays(2))))
+    @DisplayName("Verify with expired verification code")
+    void testVerifyWithExpiredVerificationCode() {
+        assertThatThrownBy(() -> user.verify(testCode, Instant.now().plus(Duration.ofDays(2))))
                 .isInstanceOf(VerificationException.class)
                 .hasMessageContaining("The given verification code is already expired. Please apply for a renewal!");
     }
 
     @Test
-    @DisplayName("Enable as it is intended to work")
-    void testEnable() {
-        assertThat(user.isEnabled()).isFalse();
+    @DisplayName("Verify as it is intended to work")
+    void testVerify() {
+        assertThat(user.isVerified()).isFalse();
         assertThat(user.getVerificationCode()).isEqualTo(testCode);
         assertThat(user.getReservedEmail()).isEqualTo(email);
         assertThat(user.getEmail()).isNull();
 
-        user.enable(testCode, Instant.now());
+        user.verify(testCode, Instant.now());
 
-        assertThat(user.isEnabled()).isTrue();
+        assertThat(user.isVerified()).isTrue();
         assertThat(user.getEmail()).isEqualTo(email);
         assertThat(user.getVerificationCodeExpiration()).isNull();
         assertThat(user.getVerificationCode()).isNull();
@@ -117,7 +117,7 @@ public class UserTest {
     @Test
     @DisplayName("requestEmailChange works as intended")
     void testRequestEmailChange() {
-        user.enable(testCode, Instant.now());
+        user.verify(testCode, Instant.now());
 
         assertThat(user.getReservedEmail()).isNull();
         assertThat(user.getEmailChangeCode()).isNull();
@@ -133,7 +133,7 @@ public class UserTest {
     @Test
     @DisplayName("confirmEmailChange with wrong email change code")
     void testConfirmEmailChangeWithWrongEmailChangeCode() {
-        user.enable(testCode, Instant.now());
+        user.verify(testCode, Instant.now());
         user.requestEmailChange("a_valid_email", testCode);
         assertThatThrownBy(() -> user.confirmEmailChange(wrongTestCode, Instant.now()))
                 .isInstanceOf(VerificationException.class)
@@ -143,7 +143,7 @@ public class UserTest {
     @Test
     @DisplayName("confirmEmailChange with expired email change code")
     void testConfirmEmailChangeWithExpiredEmailChangeCode() {
-        user.enable(testCode, Instant.now());
+        user.verify(testCode, Instant.now());
         user.requestEmailChange("a_valid_email", testCode);
         assertThatThrownBy(() -> user.confirmEmailChange(testCode, Instant.now().plus(Duration.ofDays(2))))
                 .isInstanceOf(VerificationException.class)

@@ -70,6 +70,10 @@ public class User implements UserDetails {
     @Column(name = "reserved_email")
     private String reservedEmail;
 
+    @Getter
+    @Column(name = "verified", nullable = false)
+    private boolean verified;
+
     @Nullable
     @Getter
     @Column(name = "verification_code", unique = true, length = MAX_VERIFICATION_CODE_LENGTH)
@@ -112,6 +116,7 @@ public class User implements UserDetails {
         this.username = username;
         this.reservedEmail = email;
         this.hashedPassword = hashedPassword;
+        this.verified = false;
         this.verificationCode = verificationCode;
         this.verificationCodeExpiration = Instant.now().plus(REGISTRATION_EXPIRATION);
         this.passwordChangeCode = null;
@@ -119,7 +124,7 @@ public class User implements UserDetails {
         this.emailChangeCode = null;
         this.emailChangeCodeExpiration = null;
         this.role = ROLE_USER;
-        this.enabled = false;
+        this.enabled = true;
         this.locked = false;
     }
 
@@ -148,9 +153,9 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(this.role));
     }
 
-    public void enable(String sentVerificationCode, Instant now) throws VerificationException {
-        if (enabled) {
-            throw new VerificationException("User with ID: %s is already enabled!".formatted(this.id));
+    public void verify(String sentVerificationCode, Instant now) throws VerificationException {
+        if (verified) {
+            throw new VerificationException("User with ID: %s is already verified!".formatted(this.id));
         }
 
         assert this.verificationCode != null;
@@ -169,7 +174,7 @@ public class User implements UserDetails {
         this.verificationCode = null;
         this.verificationCodeExpiration = null;
 
-        this.enabled = true;
+        this.verified = true;
     }
 
     public void requestPasswordChange(String passwordChangeCode) {
@@ -218,7 +223,7 @@ public class User implements UserDetails {
             throw new VerificationException("The given email change code has expired! Please apply for a renewal!");
         }
 
-        if (!this.enabled) { // should actually never happen but just to be sure!
+        if (!this.verified) { // should actually never happen but just to be sure!
             throw new VerificationException("The user is not yet verified and must not change his email until he is!");
         }
 

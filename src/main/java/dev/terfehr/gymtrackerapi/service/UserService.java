@@ -59,7 +59,7 @@ public class UserService {
         return new UserDTO(authUser);
     }
 
-    @PreAuthorize("principal.enabled")
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public UserDTO requestEmailChange(User authUser, String currentPassword, String desiredEmail) throws AuthenticationException, CredentialsTakenException {
         if (!passwordEncoder.matches(currentPassword, authUser.getPassword())) {
             throw new AuthenticationException("The provided password does not match the current users' one");
