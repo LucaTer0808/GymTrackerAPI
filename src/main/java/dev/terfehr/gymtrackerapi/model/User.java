@@ -15,15 +15,15 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
-// TODO: enabled shoult NOT be confused with verified. Add an additional field verified and use enabled as another metric
 @Entity
 @Table(name = "users")
 @NullMarked
 @NoArgsConstructor
 public class User implements UserDetails {
 
-    public static final String ROLE_USER = "ROLE_USER";
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_USER = "USER";
+    public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_OWNER = "OWNER";
     public static final Duration REGISTRATION_EXPIRATION = Duration.ofDays(1);
     public static final Duration CHANGE_PASSWORD_DURATION = Duration.ofHours(1);
     public static final Duration CHANGE_EMAIL_DURATION = Duration.ofDays(1);
@@ -123,7 +123,7 @@ public class User implements UserDetails {
         this.passwordChangeCodeExpiration = null;
         this.emailChangeCode = null;
         this.emailChangeCodeExpiration = null;
-        this.role = ROLE_USER;
+        this.role = "ROLE_" + ROLE_USER;
         this.enabled = true;
         this.locked = false;
     }

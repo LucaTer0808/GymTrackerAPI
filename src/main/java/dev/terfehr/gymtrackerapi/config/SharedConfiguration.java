@@ -1,8 +1,11 @@
 package dev.terfehr.gymtrackerapi.config;
 
+import dev.terfehr.gymtrackerapi.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -53,6 +56,14 @@ public class SharedConfiguration {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    static RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+                .role(User.ROLE_OWNER).implies(User.ROLE_ADMIN)
+                .role(User.ROLE_ADMIN).implies(User.ROLE_USER)
+                .build();
     }
 }
 

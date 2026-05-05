@@ -90,7 +90,7 @@ public class UserService {
             throw new AuthenticationException("The provided password does not match the current users' one");
         }
 
-        if (authUser.isEnabled()) {
+        if (authUser.isVerified()) {
             String email = authUser.getEmail();
             assert email != null;
             emailService.sendAccountDeletionEmail(email);
