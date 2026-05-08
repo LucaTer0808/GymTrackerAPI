@@ -14,5 +14,9 @@ public class Execution {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exercise",  nullable = false)
+    private Exercise exercise;
+
     // TODO: Add implementation here AND in the DTO!!!
 }
