@@ -265,9 +265,19 @@ public class User implements UserDetails {
         return exercise;
     }
 
-    public Split changeSplit(String name, Set<String> dayNames) {
-        Split split = new Split(name, dayNames);
+    public Split changeSplit(String name, List<String> dayNames) {
+        Split split = new Split(this, name, dayNames);
         this.split = split;
         return split;
+    }
+
+    public void deleteSplit() {
+        this.split = null;
+    }
+
+    public void deleteExercise(Exercise exercise) {
+        assert this.exercises.contains(exercise);
+
+        this.exercises.remove(exercise);
     }
 }

@@ -2,6 +2,7 @@ package dev.terfehr.gymtrackerapi.service;
 
 import dev.terfehr.gymtrackerapi.dto.UserDTO;
 import dev.terfehr.gymtrackerapi.exception.AuthenticationException;
+import dev.terfehr.gymtrackerapi.exception.DatabaseConflictException;
 import dev.terfehr.gymtrackerapi.infrastructure.EmailServiceI;
 import dev.terfehr.gymtrackerapi.infrastructure.UUIDService;
 import dev.terfehr.gymtrackerapi.model.User;
@@ -25,13 +26,13 @@ public class UserService {
     private final UUIDService uuidService;
     private final PasswordEncoder passwordEncoder;
 
-    public UserDTO changeUsername(User authUser, String username, String password) throws AuthenticationException, CredentialsTakenException {
+    public UserDTO changeUsername(User authUser, String username, String password) throws AuthenticationException, DatabaseConflictException {
         if (!passwordEncoder.matches(password, authUser.getPassword())) {
             throw new AuthenticationException("The given password is incorrect");
         }
 
         if (userRepository.existsByUsername(username)) {
-            throw new CredentialsTakenException("The username " + username + " is already in use");
+            throw new DatabaseConflictException("The username " + username + " is already in use");
         }
 
         authUser.changeUsername(username);
@@ -59,13 +60,13 @@ public class UserService {
     }
 
     @PreAuthorize("authorizationService.isVerified(principal)")
-    public UserDTO requestEmailChange(User authUser, String currentPassword, String desiredEmail) throws AuthenticationException, CredentialsTakenException {
+    public UserDTO requestEmailChange(User authUser, String currentPassword, String desiredEmail) throws AuthenticationException, DatabaseConflictException {
         if (!passwordEncoder.matches(currentPassword, authUser.getPassword())) {
             throw new AuthenticationException("The provided password does not match the current users' one");
         }
 
         if (userRepository.existsByEmail(desiredEmail)) {
-            throw new CredentialsTakenException("The email " + desiredEmail + " is already in use");
+            throw new DatabaseConflictException("The email " + desiredEmail + " is already in use");
         }
 
         String emailChangeCode = uuidService.generateUniqueEmailChangeCode();

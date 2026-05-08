@@ -36,13 +36,32 @@ public class Exercise {
     @Column(name = "name", nullable = false)
     private String name;
 
-
+    @Getter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "exercise", orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<ExerciseSlot> exerciseSlots;
+
+    @Getter
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "exercise", orphanRemoval = true, cascade = CascadeType.ALL)
+    private Set<Execution> executions;
 
     public Exercise(User user, String name)  {
         this.user = user;
         this.name = name;
         this.exerciseSlots = new HashSet<>();
+        this.executions = new HashSet<>();
+    }
+
+    public void addExerciseSlot(ExerciseSlot slot) {
+        assert this.exerciseSlots.contains(slot);
+        this.exerciseSlots.add(slot);
+    }
+
+    public void removeExerciseSlot(ExerciseSlot slot) {
+        assert this.exerciseSlots.contains(slot);
+        this.exerciseSlots.remove(slot);
+    }
+
+    public void changeName(String name) {
+        this.name = name;
     }
 }
