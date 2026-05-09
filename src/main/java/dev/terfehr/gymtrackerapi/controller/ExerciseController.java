@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/exercises")
 @NullMarked
@@ -32,11 +34,10 @@ public class ExerciseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    @GetMapping("/{exerciseId}")
-    public ResponseEntity<ExerciseDTO> getExercise(@AuthenticationPrincipal User authUser, @PathVariable long exerciseId) {
-        ExerciseDTO dto = exerciseService.getExercise(
-                authUser,
-                exerciseId
+    @GetMapping
+    public ResponseEntity<List<ExerciseDTO>> getExercises(@AuthenticationPrincipal User authUser) {
+        List<ExerciseDTO> dto = exerciseService.getExercises(
+                authUser
         );
 
         return ResponseEntity.ok(dto);

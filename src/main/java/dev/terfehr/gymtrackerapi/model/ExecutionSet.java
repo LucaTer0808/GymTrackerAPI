@@ -29,8 +29,8 @@ public class ExecutionSet {
     private Execution execution;
 
     @Getter
-    @Column(name = "number_in_exercise", nullable = false)
-    private int numberInExercise;
+    @Column(name = "number_in_execution", nullable = false)
+    private int numberInExecution;
 
     @Getter
     @Column(name = "weight", nullable = false)
@@ -40,8 +40,8 @@ public class ExecutionSet {
     @Column(name = "reps", nullable = false)
     private int reps;
 
-    public ExecutionSet(Execution execution, int numberInExercise, double weight, int reps) {
-        this.numberInExercise = numberInExercise;
+    public ExecutionSet(Execution execution, int numberInExecution, double weight, int reps) {
+        this.numberInExecution = numberInExecution;
         this.execution = execution;
         this.weight = weight;
         this.reps = reps;

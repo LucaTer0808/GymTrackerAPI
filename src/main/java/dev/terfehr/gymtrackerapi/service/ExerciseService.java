@@ -14,6 +14,9 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @NullMarked
 @AllArgsConstructor
@@ -34,14 +37,14 @@ public class ExerciseService {
         return new ExerciseWithoutExecutionDTO(exercise);
     }
 
-    public ExerciseDTO getExercise(User authUser, long exerciseId) throws ResourceNotFoundException {
-        Long authUserId = authUser.getId();
-        assert authUserId != null;
+    public List<ExerciseDTO> getExercises(User authUser) {
+        List<ExerciseDTO> exerciseDTOs = new ArrayList<>();
 
-        Exercise exercise = exerciseRepository.findByIdAndUserId(exerciseId, authUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("Exercise with ID " + exerciseId + " not found"));
+        for (Exercise exercise : authUser.getExercises()) {
+            exerciseDTOs.add(new ExerciseDTO(exercise));
+        }
 
-        return new ExerciseDTO(exercise);
+        return exerciseDTOs;
     }
 
     public ExerciseWithoutExecutionDTO updateExercise(User authUser, long exerciseId, @Nullable String name) throws ResourceNotFoundException {

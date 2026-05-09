@@ -118,6 +118,7 @@ public class User implements UserDetails {
     @JoinColumn(name = "split_id")
     private Split split;
 
+    @Getter
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<Exercise> exercises;
 

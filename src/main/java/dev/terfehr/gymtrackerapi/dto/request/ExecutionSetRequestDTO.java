@@ -3,7 +3,7 @@ package dev.terfehr.gymtrackerapi.dto.request;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public record CreateExecutionSetRequest(
+public record ExecutionSetRequestDTO(
         @NotNull(message = "Please include a valid number for your set in the request!")
         @Positive(message = "Please only use positive numbers to enumerate the sets in your request!")
         Integer numberInExecution,

@@ -1,7 +1,7 @@
 package dev.terfehr.gymtrackerapi.annotation.validator;
 
 import dev.terfehr.gymtrackerapi.annotation.ValidExecutionSetNumbers;
-import dev.terfehr.gymtrackerapi.dto.request.CreateExecutionSetRequest;
+import dev.terfehr.gymtrackerapi.dto.request.ExecutionSetRequestDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -11,11 +11,11 @@ import java.util.Set;
 public class ExecutionSetNumbersValidator
         implements ConstraintValidator<
         ValidExecutionSetNumbers,
-        List<CreateExecutionSetRequest>> {
+        List<ExecutionSetRequestDTO>> {
 
     @Override
     public boolean isValid(
-            List<CreateExecutionSetRequest> sets,
+            List<ExecutionSetRequestDTO> sets,
             ConstraintValidatorContext context
     ) {
 
@@ -24,7 +24,7 @@ public class ExecutionSetNumbersValidator
         }
 
         List<Integer> numbers = sets.stream()
-                .map(CreateExecutionSetRequest::numberInExecution)
+                .map(ExecutionSetRequestDTO::numberInExecution)
                 .toList();
 
         Set<Integer> unique = Set.copyOf(numbers);

@@ -1,12 +1,15 @@
 package dev.terfehr.gymtrackerapi.model;
 
+import dev.terfehr.gymtrackerapi.dto.request.ExecutionSetRequestDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -63,5 +66,20 @@ public class Exercise {
 
     public void changeName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Afterward, use the returned object to fill it with sets!
+     */
+    public Execution addEmptyExecution() {
+        Execution execution = new Execution(this);
+        this.executions.add(execution);
+
+        return execution;
+    }
+
+    public void deleteExecution(Execution execution) {
+        assert this.executions.contains(execution);
+        this.executions.remove(execution);
     }
 }
