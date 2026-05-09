@@ -31,9 +31,11 @@ public record RegisterRequest(
         @Size(min = 1, max = User.MAX_EMAIL_LENGTH, message = "The email address must be no longer than " + User.MAX_EMAIL_LENGTH + " long.")
         String email,
 
+        @NotBlank(message = "The provided password must not be null or an empty string!")
         @Password(message = "The password is too weak")
         String password,
 
+        @NotNull(message = "The provided password must not be null or an empty string!")
         @Password(message = "The password is too weak")
         String password2
 ) {}
