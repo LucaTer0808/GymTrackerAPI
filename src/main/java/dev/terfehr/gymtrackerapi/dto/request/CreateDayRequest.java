@@ -11,8 +11,8 @@ import java.util.List;
 
 public record CreateDayRequest(
         @Trim
-        @NotBlank(message = "The name of the day must not be null or an empty string!")
-        @Size(max = Day.MAX_NAME_LENGTH, message = "The name of the day must not be longer than " + Day.MAX_NAME_LENGTH)
+        @NotNull(message = "The name of the day must not be null!")
+        @Size(min = 1, max = Day.MAX_NAME_LENGTH, message = "The name of the day must not be longer than " + Day.MAX_NAME_LENGTH)
         String name,
 
         @NotNull(message = "You must pass a list of IDs representing the exercises belonging to the user")

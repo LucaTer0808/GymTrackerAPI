@@ -5,6 +5,7 @@ import dev.terfehr.gymtrackerapi.annotation.Trim;
 import dev.terfehr.gymtrackerapi.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record RequestEmailChangeRequest(
@@ -13,8 +14,8 @@ public record RequestEmailChangeRequest(
 
         @Trim
         @ToLowercase
-        @NotBlank(message = "The email address can not be null or an empty string!")
+        @NotNull(message = "The email address can not be null!")
         @Email(message = "The email address must be in a valid format")
-        @Size(max = User.MAX_EMAIL_LENGTH, message = "The email address must be no longer than " + User.MAX_EMAIL_LENGTH + " long.")
+        @Size(min = 1, max = User.MAX_EMAIL_LENGTH, message = "The email address must be no longer than " + User.MAX_EMAIL_LENGTH + " long.")
         String email
 ) {}
