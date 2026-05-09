@@ -6,6 +6,10 @@ import dev.terfehr.gymtrackerapi.dto.request.CreateExerciseRequest;
 import dev.terfehr.gymtrackerapi.dto.request.UpdateExerciseRequest;
 import dev.terfehr.gymtrackerapi.model.User;
 import dev.terfehr.gymtrackerapi.service.ExerciseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NullMarked;
@@ -17,15 +21,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/exercises")
+@SecurityRequirement(name = "bearerAuth")
 @NullMarked
 @AllArgsConstructor
+@RequestMapping("/exercises")
+@Tag(name = "Exercises", description = "Endpoints for managing the catalog of exercises available to the user.")
 public class ExerciseController {
 
     private final ExerciseService exerciseService;
 
+    @Operation(
+            summary = "Create a new exercise",
+            description = "Adds a custom exercise to the user's account. This exercise can later be assigned to training days."
+    )
     @PostMapping
-    public ResponseEntity<ExerciseWithoutExecutionDTO> createExercise(@AuthenticationPrincipal User authUser, @RequestBody @Valid CreateExerciseRequest request) {
+    public ResponseEntity<ExerciseWithoutExecutionDTO> createExercise(
+            @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
+            @RequestBody @Valid CreateExerciseRequest request) {
         ExerciseWithoutExecutionDTO dto = exerciseService.createExercise(
                 authUser,
                 request.name()
@@ -34,8 +46,13 @@ public class ExerciseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
+    @Operation(
+            summary = "List all exercises",
+            description = "Retrieves all exercises created by the authenticated user, including basic details."
+    )
     @GetMapping
-    public ResponseEntity<List<ExerciseDTO>> getExercises(@AuthenticationPrincipal User authUser) {
+    public ResponseEntity<List<ExerciseDTO>> getExercises(
+            @Parameter(hidden = true) @AuthenticationPrincipal User authUser) {
         List<ExerciseDTO> dto = exerciseService.getExercises(
                 authUser
         );
@@ -43,10 +60,15 @@ public class ExerciseController {
         return ResponseEntity.ok(dto);
     }
 
+    @Operation(
+            summary = "Update exercise details",
+            description = "Allows changing the name or properties of an existing exercise."
+    )
     @PatchMapping("/{exerciseId}")
-    public ResponseEntity<ExerciseWithoutExecutionDTO> updateExercise(@AuthenticationPrincipal User authUser,
-                                                      @PathVariable long exerciseId,
-                                                      @RequestBody @Valid UpdateExerciseRequest request) {
+    public ResponseEntity<ExerciseWithoutExecutionDTO> updateExercise(
+            @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
+            @PathVariable long exerciseId,
+            @RequestBody @Valid UpdateExerciseRequest request) {
         ExerciseWithoutExecutionDTO dto = exerciseService.updateExercise(
                 authUser,
                 exerciseId,
@@ -56,8 +78,14 @@ public class ExerciseController {
         return ResponseEntity.ok(dto);
     }
 
+    @Operation(
+            summary = "Delete an exercise",
+            description = "Removes the exercise from the user's account. Note: This might affect training days or history linked to this exercise depending on cascade settings."
+    )
     @DeleteMapping("/{exerciseId}")
-    public ResponseEntity<Void> deleteExercise(@AuthenticationPrincipal User authUser, @PathVariable long exerciseId) {
+    public ResponseEntity<Void> deleteExercise(
+            @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
+            @PathVariable long exerciseId) {
         exerciseService.deleteExercise(
                 authUser,
                 exerciseId
