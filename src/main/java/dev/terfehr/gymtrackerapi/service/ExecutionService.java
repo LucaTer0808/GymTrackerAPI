@@ -12,6 +12,7 @@ import dev.terfehr.gymtrackerapi.repository.ExerciseRepositoryI;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ public class ExecutionService {
     private final ExecutionRepositoryI executionRepository;
     private final ExerciseRepositoryI exerciseRepository;
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public ExecutionDTO createExecution(User authUser, long exerciseId, List<ExecutionSetRequestDTO> executionSetDTOs) {
         Long authUserId = authUser.getId();
         assert  authUserId != null;
@@ -45,6 +47,7 @@ public class ExecutionService {
         return new ExecutionDTO(execution);
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public List<ExecutionDTO> getExecutions(User authUser, long exerciseId) {
         Long authUserId = authUser.getId();
         assert  authUserId != null;
@@ -61,6 +64,7 @@ public class ExecutionService {
         return executionDTOs;
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public ExecutionDTO updateExecution(User authUser, long executionId,
                                         @Nullable LocalDate date,
                                         @Nullable List<ExecutionSetRequestDTO> executionSetDTOs) throws ResourceNotFoundException {
@@ -83,6 +87,7 @@ public class ExecutionService {
         return new ExecutionDTO(execution);
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public void deleteExecution(User authUser, long executionId) throws ResourceNotFoundException {
         Long authUserId = authUser.getId();
         assert  authUserId != null;

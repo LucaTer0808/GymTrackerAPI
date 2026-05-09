@@ -11,6 +11,7 @@ import dev.terfehr.gymtrackerapi.utils.AssertionUtils;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ public class DayService {
     private final ExerciseRepositoryI exerciseRepository;
     private final SplitRepositoryI splitRepository;
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public DayDTO createDay(User authUser, String name, List<Long> exerciseIds) throws DatabaseConflictException, ResourceNotFoundException {
         Split split = authUser.getSplit();
 
@@ -50,6 +52,7 @@ public class DayService {
         return new DayDTO(day);
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public DayDTO getDay(User authUser, long dayId) throws ResourceNotFoundException {
         Long authUserId = authUser.getId();
         assert authUserId != null;
@@ -60,6 +63,7 @@ public class DayService {
         return new DayDTO(day);
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public DayDTO updateDay(User authUser, long dayId, @Nullable String name, @Nullable List<Long> exerciseIds) throws ResourceNotFoundException {
         Long authUserId = authUser.getId();
         assert authUserId != null;
@@ -83,6 +87,7 @@ public class DayService {
         return new DayDTO(day);
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public void deleteDay(User authUser, long dayId) throws ResourceNotFoundException {
         Long authUserId = authUser.getId();
         assert authUserId != null;
@@ -99,6 +104,7 @@ public class DayService {
         splitRepository.save(split);
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     private void deleteOldExerciseSlots(Day day) {
         Set<ExerciseSlot> oldSlots = new HashSet<>(day.getExerciseSlots());
         Set<Exercise> exercisesToSave = new HashSet<>();

@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class ExerciseService {
     private final ExerciseRepositoryI exerciseRepository;
     private final UserRepositoryI userRepository;
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public ExerciseWithoutExecutionDTO createExercise(User authUser, String name) throws DatabaseConflictException {
         if (exerciseRepository.existsByUserIdAndName(authUser.getId(), name)) {
             throw new DatabaseConflictException("There already is an exercise named " + name + " for the user with ID " + authUser.getId());
@@ -37,6 +39,7 @@ public class ExerciseService {
         return new ExerciseWithoutExecutionDTO(exercise);
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public List<ExerciseDTO> getExercises(User authUser) {
         List<ExerciseDTO> exerciseDTOs = new ArrayList<>();
 
@@ -47,6 +50,7 @@ public class ExerciseService {
         return exerciseDTOs;
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public ExerciseWithoutExecutionDTO updateExercise(User authUser, long exerciseId, @Nullable String name) throws ResourceNotFoundException {
         Long authUserId = authUser.getId();
         assert authUserId != null;
@@ -62,6 +66,7 @@ public class ExerciseService {
         return new ExerciseWithoutExecutionDTO(exercise);
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public void deleteExercise(User authUser, long exerciseId) throws ResourceNotFoundException {
         Long authUserId = authUser.getId();
         assert authUserId != null;

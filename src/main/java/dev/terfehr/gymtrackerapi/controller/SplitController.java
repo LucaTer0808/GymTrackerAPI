@@ -36,7 +36,7 @@ public class SplitController {
     public ResponseEntity<SplitDTO> getSplit(@AuthenticationPrincipal User authUser) {
         SplitDTO dto = splitService.getSplit(authUser);
 
-        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(dto);
     }
 
     @PatchMapping("/name")

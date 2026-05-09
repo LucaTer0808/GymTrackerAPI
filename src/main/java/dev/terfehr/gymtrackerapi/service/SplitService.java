@@ -9,6 +9,7 @@ import dev.terfehr.gymtrackerapi.repository.UserRepositoryI;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class SplitService {
     private final UserRepositoryI userRepository;
     private final SplitRepositoryI splitRepository;
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public SplitDTO createSplit(User authUser, String name, List<String> dayNames) {
         Split split = authUser.changeSplit(name, dayNames);
         userRepository.save(authUser);
@@ -30,12 +32,18 @@ public class SplitService {
         return new SplitDTO(split);
     }
 
-    public @Nullable SplitDTO getSplit(User authUser) {
+    @PreAuthorize("authorizationService.isVerified(principal)")
+    public SplitDTO getSplit(User authUser) {
         Split split = authUser.getSplit();
 
-        return split != null ? new SplitDTO(split) : null;
+        if (split == null) {
+            throw new ResourceNotFoundException("The authenticated user does not have a split.");
+        }
+
+        return new SplitDTO(split);
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public SplitDTO changeSplitName(User authUser, @Nullable String name) {
         Split split = authUser.getSplit();
 
@@ -48,6 +56,7 @@ public class SplitService {
         return new SplitDTO(split);
     }
 
+    @PreAuthorize("authorizationService.isVerified(principal)")
     public void deleteSplit(User authUser) {
         authUser.deleteSplit();
         userRepository.save(authUser);

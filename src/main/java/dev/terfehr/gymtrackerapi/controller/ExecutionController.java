@@ -59,7 +59,7 @@ public class ExecutionController {
         return ResponseEntity.ok(dto);
     }
 
-    @DeleteMapping("/executinos/{executionId}")
+    @DeleteMapping("/executions/{executionId}")
     public ResponseEntity<Void> deleteExecution(@AuthenticationPrincipal User authUser, @PathVariable long executionId) {
         executionService.deleteExecution(
                 authUser,
