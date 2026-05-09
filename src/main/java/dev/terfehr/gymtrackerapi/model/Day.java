@@ -28,7 +28,7 @@ public class Day {
     @Nullable
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "split_id", nullable = false)
     @Getter
     private Split split;

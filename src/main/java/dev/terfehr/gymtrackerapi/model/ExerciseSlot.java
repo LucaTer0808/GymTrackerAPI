@@ -22,12 +22,12 @@ public class ExerciseSlot {
 
     @Getter
     @ManyToOne(optional = false, fetch = FetchType.LAZY,  cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "day_id")
+    @JoinColumn(name = "day_id", nullable = false)
     private Day day;
 
     @Getter
     @ManyToOne(optional = false, fetch =  FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "exercise_id")
+    @JoinColumn(name = "exercise_id", nullable = false)
     private Exercise exercise;
 
     public ExerciseSlot(Day day, Exercise exercise) {
