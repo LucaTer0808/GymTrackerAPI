@@ -25,7 +25,6 @@ import java.util.Optional;
 @Transactional
 public class AuthService {
 
-
     private final EmailServiceI emailService;
     private final UserRepositoryI userRepository;
     private final UUIDService uuidService;
@@ -87,8 +86,8 @@ public class AuthService {
             throw new AuthenticationException("The given password does not match the users password");
         }
 
-        String refreshToken = jwtService.generateRefreshToken(user);
-        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user); // TODO: Does not work, please consider fixing it!
+        String accessToken = jwtService.generateAccessToken(user); // TODO: Does not work, please consider fixing it!
 
         return new LoginDTO(user, refreshToken, accessToken);
     }

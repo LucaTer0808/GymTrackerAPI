@@ -18,7 +18,7 @@ public class UUIDService {
         String code;
         do {
             code = UUID.randomUUID().toString();
-        } while (!userRepository.existsByVerificationCode(code));
+        } while (userRepository.existsByVerificationCode(code));
 
         return code;
     }
@@ -27,7 +27,7 @@ public class UUIDService {
         String code;
         do {
             code = UUID.randomUUID().toString();
-        } while(!userRepository.existsByPasswordChangeCode(code));
+        } while(userRepository.existsByPasswordChangeCode(code));
 
         return code;
     }
@@ -36,7 +36,7 @@ public class UUIDService {
         String code;
         do {
             code = UUID.randomUUID().toString();
-        } while(!userRepository.existsByEmailChangeCode(code));
+        } while(userRepository.existsByEmailChangeCode(code));
 
         return code;
     }

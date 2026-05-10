@@ -10,7 +10,7 @@ import org.jspecify.annotations.Nullable;
 @Table(name = "sets", uniqueConstraints = {
         @UniqueConstraint(
                 name = "unique_set_number_per_execution",
-                columnNames = {"execution_id", "number_in_exercise"}
+                columnNames = {"execution_id", "number_in_execution"}
         )
 })
 @NullMarked
