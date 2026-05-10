@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
-@Profile("prod")
+@Profile({"prod", "stage"})
 public class ProdConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
