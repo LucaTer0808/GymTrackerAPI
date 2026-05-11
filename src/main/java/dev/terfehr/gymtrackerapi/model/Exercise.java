@@ -55,7 +55,7 @@ public class Exercise {
     }
 
     public void addExerciseSlot(ExerciseSlot slot) {
-        assert this.exerciseSlots.contains(slot);
+        assert !this.exerciseSlots.contains(slot);
         this.exerciseSlots.add(slot);
     }
 

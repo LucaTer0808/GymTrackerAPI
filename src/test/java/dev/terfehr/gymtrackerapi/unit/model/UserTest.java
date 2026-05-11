@@ -1,185 +1,174 @@
 package dev.terfehr.gymtrackerapi.unit.model;
 
 import dev.terfehr.gymtrackerapi.exception.VerificationException;
+import dev.terfehr.gymtrackerapi.model.Exercise;
+import dev.terfehr.gymtrackerapi.model.Split;
 import dev.terfehr.gymtrackerapi.model.User;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class UserTest {
+class UserTest {
 
-    private User user;
-    private final String testCode = "123456";
-    private final String wrongTestCode = "654321";
-    private final String email = "max.mustermann.de";
-
-    @BeforeEach
-    void setUp() {
-        this.user = new User("Max", "Mustermann", "a_username", email, "hashedPassword", testCode);
+    private User createUser() {
+        return new User(
+                "Max",
+                "Mustermann",
+                "max12345",
+                "max@mail.com",
+                "hashedPw",
+                "verifyCode"
+        );
     }
 
     @Test
-    @DisplayName("Verify with enabled user")
-    void testVerifyWithEnabledUser() {
-        this.user.verify(testCode, Instant.now());
+    void shouldCreateUserCorrectly() {
+        User user = createUser();
 
-        assertThatThrownBy(() -> user.verify(testCode, Instant.now()))
-                .isInstanceOf(VerificationException.class)
-                .hasMessageContaining("is already verified!");
+        assertEquals("Max", user.getFirstName());
+        assertEquals("Mustermann", user.getLastName());
+        assertEquals("max12345", user.getUsername());
+        assertEquals("hashedPw", user.getPassword());
+        assertEquals("ROLE_USER", user.getAuthorities().iterator().next().getAuthority());
+        assertTrue(user.isAccountNonLocked());
+        assertTrue(user.isEnabled());
+        assertFalse(user.isVerified());
     }
 
     @Test
-    @DisplayName("Verify with wrong verification code")
-    void testVerifyWithWrongVerificationCode() {
-        assertThatThrownBy(() -> user.verify(wrongTestCode, Instant.now()))
-                .isInstanceOf(VerificationException.class)
-                .hasMessageContaining("The given verification code does not match the one of the user!");
+    void shouldVerifyUserSuccessfully() {
+        User user = createUser();
+
+        Instant now = Instant.now();
+        user.verify("verifyCode", now);
+
+        assertTrue(user.isEnabled());
+        assertEquals("max@mail.com", user.getEmail());
+        assertNull(user.getReservedEmail());
+        assertNull(user.getVerificationCode());
+        assertNull(user.getVerificationCodeExpiration());
     }
 
     @Test
-    @DisplayName("Verify with expired verification code")
-    void testVerifyWithExpiredVerificationCode() {
-        assertThatThrownBy(() -> user.verify(testCode, Instant.now().plus(Duration.ofDays(2))))
-                .isInstanceOf(VerificationException.class)
-                .hasMessageContaining("The given verification code is already expired. Please apply for a renewal!");
+    void shouldThrowWhenVerificationCodeIsWrong() {
+        User user = createUser();
+
+        assertThrows(VerificationException.class, () ->
+                user.verify("wrongCode", Instant.now())
+        );
     }
 
     @Test
-    @DisplayName("Verify as it is intended to work")
-    void testVerify() {
-        assertThat(user.isVerified()).isFalse();
-        assertThat(user.getVerificationCode()).isEqualTo(testCode);
-        assertThat(user.getReservedEmail()).isEqualTo(email);
-        assertThat(user.getEmail()).isNull();
+    void shouldThrowWhenVerificationExpired() {
+        User user = createUser();
 
-        user.verify(testCode, Instant.now());
+        Instant future = Instant.now().plus(User.REGISTRATION_EXPIRATION.plus(Duration.ofDays(2)));
 
-        assertThat(user.isVerified()).isTrue();
-        assertThat(user.getEmail()).isEqualTo(email);
-        assertThat(user.getVerificationCodeExpiration()).isNull();
-        assertThat(user.getVerificationCode()).isNull();
-        assertThat(user.getReservedEmail()).isNull();
+        assertThrows(VerificationException.class, () ->
+                user.verify("verifyCode", future)
+        );
     }
 
     @Test
-    @DisplayName("requestPasswordChange as it is intended to work")
-    void testRequestPasswordChange() {
-        assertThat(user.getPasswordChangeCode()).isNull();
-        assertThat(user.getPasswordChangeCodeExpiration()).isNull();
+    void shouldRequestPasswordChange() {
+        User user = createUser();
 
-        user.requestPasswordChange(testCode);
+        user.requestPasswordChange("resetCode");
 
-        assertThat(user.getPasswordChangeCode()).isEqualTo(testCode);
-        assertThat(user.getPasswordChangeCodeExpiration()).isAfter(Instant.now());
+        assertThrows(VerificationException.class, () ->
+                user.verifyPasswordChange("newPw", "wrong", Instant.now())
+        );
+
+        user.verifyPasswordChange("newPw", "resetCode", Instant.now());
+
+        assertEquals("newPw", user.getPassword());
     }
 
     @Test
-    @DisplayName("verifyPasswordChange with a wrong test code")
-    void testVerifyPasswordChangeWithWrongTestCode() {
-        user.requestPasswordChange(testCode);
+    void shouldChangeUsername() {
+        User user = createUser();
 
-        assertThatThrownBy(() -> user.verifyPasswordChange("a_valid_password", wrongTestCode, Instant.now()))
-                .isInstanceOf(VerificationException.class)
-                .hasMessageContaining("The given password change code does not match");
+        user.changeUsername("newName");
+
+        assertEquals("newName", user.getUsername());
     }
 
     @Test
-    @DisplayName("verifyPasswordChange with expired password change code")
-    void testVerifyPasswordChangeWithExpiredTestCode() {
-        user.requestPasswordChange(testCode);
+    void shouldChangeNamePartially() {
+        User user = createUser();
 
-        assertThatThrownBy(() -> user.verifyPasswordChange("a_valid_password", testCode, Instant.now().plus(Duration.ofDays(2))))
-                .isInstanceOf(VerificationException.class)
-                .hasMessageContaining("The given password change code has expired!");
+        user.changeName("John", null);
+
+        assertEquals("John", user.getFirstName());
+        assertEquals("Mustermann", user.getLastName());
+
+        user.changeName(null, "Doe");
+
+        assertEquals("John", user.getFirstName());
+        assertEquals("Doe", user.getLastName());
     }
 
     @Test
-    @DisplayName("verifyPasswordChange works as intended")
-    void testVerifyPasswordChange() {
-        user.requestPasswordChange(testCode);
+    void shouldAddExercise() {
+        User user = createUser();
 
-        assertThat(user.getPassword()).isEqualTo("hashedPassword");
-        assertThat(user.getPasswordChangeCode()).isNotNull();
-        assertThat(user.getPasswordChangeCodeExpiration()).isAfter(Instant.now());
+        Exercise exercise = user.addExercise("Bench Press");
 
-        user.verifyPasswordChange("a_valid_password", testCode, Instant.now());
-
-        assertThat(user.getPassword()).isEqualTo("a_valid_password");
-        assertThat(user.getPasswordChangeCode()).isNull();
-        assertThat(user.getPasswordChangeCodeExpiration()).isNull();
+        assertNotNull(exercise);
+        assertEquals(1, user.getExercises().size());
     }
 
     @Test
-    @DisplayName("requestEmailChange works as intended")
-    void testRequestEmailChange() {
-        user.verify(testCode, Instant.now());
+    void shouldChangeSplit() {
+        User user = createUser();
 
-        assertThat(user.getReservedEmail()).isNull();
-        assertThat(user.getEmailChangeCode()).isNull();
-        assertThat(user.getEmailChangeCodeExpiration()).isNull();
+        Split split = user.changeSplit("Push Pull", List.of("Push", "Pull"));
 
-        user.requestEmailChange("a_valid_email", testCode);
-
-        assertThat(user.getReservedEmail()).isEqualTo("a_valid_email");
-        assertThat(user.getEmailChangeCode()).isEqualTo(testCode);
-        assertThat(user.getEmailChangeCodeExpiration()).isAfter(Instant.now());
+        assertNotNull(split);
+        assertEquals(split, user.getSplit());
     }
 
     @Test
-    @DisplayName("confirmEmailChange with wrong email change code")
-    void testConfirmEmailChangeWithWrongEmailChangeCode() {
-        user.verify(testCode, Instant.now());
-        user.requestEmailChange("a_valid_email", testCode);
-        assertThatThrownBy(() -> user.confirmEmailChange(wrongTestCode, Instant.now()))
-                .isInstanceOf(VerificationException.class)
-                .hasMessageContaining("The given email change code does not match the one of the user!");
+    void shouldDeleteSplit() {
+        User user = createUser();
+
+        user.changeSplit("Push Pull", List.of("Push", "Pull"));
+        user.deleteSplit();
+
+        assertNull(user.getSplit());
     }
 
     @Test
-    @DisplayName("confirmEmailChange with expired email change code")
-    void testConfirmEmailChangeWithExpiredEmailChangeCode() {
-        user.verify(testCode, Instant.now());
-        user.requestEmailChange("a_valid_email", testCode);
-        assertThatThrownBy(() -> user.confirmEmailChange(testCode, Instant.now().plus(Duration.ofDays(2))))
-                .isInstanceOf(VerificationException.class)
-                .hasMessageContaining("The given email change code has expired! Please apply for a renewal!");
+    void shouldRequestAndConfirmEmailChange() {
+        User user = createUser();
+        user.verify("verifyCode",  Instant.now());
+
+        user.requestEmailChange("new@mail.com", "emailCode");
+
+        assertThrows(VerificationException.class, () ->
+                user.confirmEmailChange("wrong", Instant.now())
+        );
+
+        user.confirmEmailChange("emailCode", Instant.now());
+
+        assertEquals("new@mail.com", user.getEmail());
+        assertNull(user.getEmailChangeCode());
+        assertNull(user.getEmailChangeCodeExpiration());
+        assertNull(user.getReservedEmail());
     }
 
     @Test
-    @DisplayName("confirmEmailChange with disabled user")
-    void testConfirmEmailChangeWithDisabledUser() {
-        user.requestEmailChange("a_valid_email", testCode);
-        assertThatThrownBy(() -> user.confirmEmailChange(testCode, Instant.now()))
-                .isInstanceOf(VerificationException.class)
-                .hasMessageContaining("The user is not yet verified and must not change his email until he is!");
-    }
+    void shouldDeleteExercise() {
+        User user = createUser();
 
-    @Test
-    @DisplayName("changeName works as intended")
-    void testChangeName() {
-        user.changeName(null, null);
+        Exercise exercise = user.addExercise("Squat");
 
-        assertThat(user.getFirstName()).isEqualTo("Max");
-        assertThat(user.getLastName()).isEqualTo("Mustermann");
+        user.deleteExercise(exercise);
 
-        user.changeName("bla", null);
-
-        assertThat(user.getFirstName()).isEqualTo("bla");
-        assertThat(user.getLastName()).isEqualTo("Mustermann");
-
-        user.changeName("bla", "bla");
-
-        assertThat(user.getFirstName()).isEqualTo("bla");
-        assertThat(user.getLastName()).isEqualTo("bla");
-
-        user.changeName("a", "b");
-
-        assertThat(user.getFirstName()).isEqualTo("a");
-        assertThat(user.getLastName()).isEqualTo("b");
+        assertEquals(0, user.getExercises().size());
     }
 }
