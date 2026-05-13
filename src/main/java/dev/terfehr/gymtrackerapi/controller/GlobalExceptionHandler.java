@@ -3,9 +3,9 @@ package dev.terfehr.gymtrackerapi.controller;
 import dev.terfehr.gymtrackerapi.exception.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.jspecify.annotations.NullMarked;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @NullMarked
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    // TODO: Change error type to RFC9457
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException exception) {
@@ -52,8 +54,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<?> handleException(Exception exception) {
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred!");
-//    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred!");
+    }
 }
