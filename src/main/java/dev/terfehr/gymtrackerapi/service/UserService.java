@@ -26,6 +26,10 @@ public class UserService {
     private final UUIDService uuidService;
     private final PasswordEncoder passwordEncoder;
 
+    public UserDTO getUser(User authUser) {
+        return new UserDTO(authUser);
+    }
+
     public UserDTO changeUsername(User authUser, String username, String password) throws AuthenticationException, DatabaseConflictException {
         if (!passwordEncoder.matches(password, authUser.getPassword())) {
             throw new AuthenticationException("The given password is incorrect");

@@ -26,6 +26,17 @@ public class MeController {
     private final UserService userService;
 
     @Operation(
+            summary = "Gets the user",
+            description = "Retrieves all personal information about the currently authenticated user."
+    )
+    @GetMapping
+    public ResponseEntity<UserDTO> getMe(@AuthenticationPrincipal User authUser) {
+        UserDTO dto = userService.getUser(authUser);
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @Operation(
             summary = "Change username",
             description = "Updates the unique username of the authenticated user. Requires the current password for verification."
     )

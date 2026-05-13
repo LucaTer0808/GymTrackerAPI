@@ -39,6 +39,9 @@ public class ProdConfiguration {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(AuthController.AUTH_PATH + "/**").permitAll()
+                        .requestMatchers("/v3/api-docs.html").permitAll()
+                        .requestMatchers("/v3/api-docs.yaml").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
