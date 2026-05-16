@@ -1,5 +1,10 @@
 package dev.terfehr.gymtrackerapi.controller;
 
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiBadRequestResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiConflictResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiForbiddenResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiInternalServerErrorResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiNotFoundResponse;
 import dev.terfehr.gymtrackerapi.dto.DayDTO;
 import dev.terfehr.gymtrackerapi.dto.request.CreateDayRequest;
 import dev.terfehr.gymtrackerapi.dto.request.UpdateDayRequest;
@@ -7,6 +12,9 @@ import dev.terfehr.gymtrackerapi.model.User;
 import dev.terfehr.gymtrackerapi.service.DayService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,6 +39,12 @@ public class DayController {
             summary = "Create a new training day",
             description = "Adds a specific day to the user's current split and links the provided exercises to it."
     )
+    @ApiResponse(responseCode = "201", description = "Training day created successfully", content = @Content(schema = @Schema(implementation = DayDTO.class)))
+    @ApiBadRequestResponse
+    @ApiForbiddenResponse
+    @ApiNotFoundResponse
+    @ApiConflictResponse
+    @ApiInternalServerErrorResponse
     @PostMapping
     public ResponseEntity<DayDTO> createDay(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
@@ -48,6 +62,10 @@ public class DayController {
             summary = "Get day details",
             description = "Retrieves information about a specific day, including its name and the exercises assigned to it."
     )
+    @ApiResponse(responseCode = "200", description = "Training day details", content = @Content(schema = @Schema(implementation = DayDTO.class)))
+    @ApiForbiddenResponse
+    @ApiNotFoundResponse
+    @ApiInternalServerErrorResponse
     @GetMapping("/{dayId}")
     public ResponseEntity<DayDTO> getDay(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
@@ -64,6 +82,12 @@ public class DayController {
             summary = "Update a training day",
             description = "Allows updating the name of the day or changing the list of associated exercise IDs."
     )
+    @ApiResponse(responseCode = "200", description = "Training day updated successfully", content = @Content(schema = @Schema(implementation = DayDTO.class)))
+    @ApiBadRequestResponse
+    @ApiForbiddenResponse
+    @ApiNotFoundResponse
+    @ApiConflictResponse
+    @ApiInternalServerErrorResponse
     @PatchMapping("/{dayId}")
     public ResponseEntity<DayDTO> updateDay(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
@@ -83,6 +107,10 @@ public class DayController {
             summary = "Delete a training day",
             description = "Permanently removes a training day from the user's split."
     )
+    @ApiResponse(responseCode = "204", description = "Training day deleted successfully", content = @Content)
+    @ApiForbiddenResponse
+    @ApiNotFoundResponse
+    @ApiInternalServerErrorResponse
     @DeleteMapping("/{dayId}")
     public ResponseEntity<Void> deleteDay(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser,

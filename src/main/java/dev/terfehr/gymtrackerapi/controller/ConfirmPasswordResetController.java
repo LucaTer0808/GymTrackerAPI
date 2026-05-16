@@ -1,8 +1,15 @@
 package dev.terfehr.gymtrackerapi.controller;
 
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiBadRequestResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiInternalServerErrorResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiNotFoundResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiUnauthorizedResponse;
 import dev.terfehr.gymtrackerapi.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NullMarked;
@@ -23,6 +30,7 @@ public class ConfirmPasswordResetController {
             summary = "Display password reset form",
             description = "Renders the HTML password reset page using the token provided in the reset email."
     )
+    @ApiResponse(responseCode = "200", description = "Password reset HTML form", content = @Content(mediaType = "text/html", schema = @Schema(type = "string")))
     @GetMapping(AuthController.CONFIRM_PASSWORD_RESET_PATH + "/{passwordChangeCode}")
     public String confirmPasswordReset(
             @PathVariable String passwordChangeCode,
@@ -35,6 +43,11 @@ public class ConfirmPasswordResetController {
             summary = "Process password reset",
             description = "Handles the form submission from the reset page to update the user's password in the database."
     )
+    @ApiResponse(responseCode = "200", description = "Password reset HTML result page", content = @Content(mediaType = "text/html", schema = @Schema(type = "string")))
+    @ApiBadRequestResponse
+    @ApiUnauthorizedResponse
+    @ApiNotFoundResponse
+    @ApiInternalServerErrorResponse
     @PostMapping("/confirm-password-reset")
     public String processReset(
             @RequestParam("token") String token,

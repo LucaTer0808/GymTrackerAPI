@@ -31,7 +31,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public UserDTO registerUser(String firstName, String lastName, String username, String email, String password, String password2) throws DatabaseConflictException {
+    public UserDTO registerUser(String firstName, String lastName, String username, String email, String password, String password2) throws DatabaseConflictException, IllegalArgumentException {
         if (userRepository.existsByEmail(email)) {
             throw new DatabaseConflictException("The email address " +  email + " is already taken");
         }
@@ -41,7 +41,7 @@ public class AuthService {
         }
 
         if (!password.equals(password2)) {
-            throw new AuthenticationException("Given passwords do not match! Please send another registration request");
+            throw new IllegalArgumentException("Given passwords do not match! Please send another registration request");
         }
 
         String encodedPassword = passwordEncoder.encode(password);

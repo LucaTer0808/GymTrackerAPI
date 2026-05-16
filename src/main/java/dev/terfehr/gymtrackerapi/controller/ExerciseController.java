@@ -1,5 +1,10 @@
 package dev.terfehr.gymtrackerapi.controller;
 
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiBadRequestResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiConflictResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiForbiddenResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiInternalServerErrorResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiNotFoundResponse;
 import dev.terfehr.gymtrackerapi.dto.ExerciseDTO;
 import dev.terfehr.gymtrackerapi.dto.ExerciseWithoutExecutionDTO;
 import dev.terfehr.gymtrackerapi.dto.request.CreateExerciseRequest;
@@ -8,6 +13,10 @@ import dev.terfehr.gymtrackerapi.model.User;
 import dev.terfehr.gymtrackerapi.service.ExerciseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,6 +43,11 @@ public class ExerciseController {
             summary = "Create a new exercise",
             description = "Adds a custom exercise to the user's account. This exercise can later be assigned to training days."
     )
+    @ApiResponse(responseCode = "201", description = "Exercise created successfully", content = @Content(schema = @Schema(implementation = ExerciseWithoutExecutionDTO.class)))
+    @ApiBadRequestResponse
+    @ApiForbiddenResponse
+    @ApiConflictResponse
+    @ApiInternalServerErrorResponse
     @PostMapping
     public ResponseEntity<ExerciseWithoutExecutionDTO> createExercise(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
@@ -50,6 +64,9 @@ public class ExerciseController {
             summary = "List all exercises",
             description = "Retrieves all exercises created by the authenticated user, including basic details."
     )
+    @ApiResponse(responseCode = "200", description = "Exercise list", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ExerciseDTO.class))))
+    @ApiForbiddenResponse
+    @ApiInternalServerErrorResponse
     @GetMapping
     public ResponseEntity<List<ExerciseDTO>> getExercises(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser) {
@@ -64,6 +81,11 @@ public class ExerciseController {
             summary = "Update exercise details",
             description = "Allows changing the name or properties of an existing exercise."
     )
+    @ApiResponse(responseCode = "200", description = "Exercise updated successfully", content = @Content(schema = @Schema(implementation = ExerciseWithoutExecutionDTO.class)))
+    @ApiBadRequestResponse
+    @ApiForbiddenResponse
+    @ApiNotFoundResponse
+    @ApiInternalServerErrorResponse
     @PatchMapping("/{exerciseId}")
     public ResponseEntity<ExerciseWithoutExecutionDTO> updateExercise(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
@@ -82,6 +104,10 @@ public class ExerciseController {
             summary = "Delete an exercise",
             description = "Removes the exercise from the user's account. Note: This might affect training days or history linked to this exercise depending on cascade settings."
     )
+    @ApiResponse(responseCode = "204", description = "Exercise deleted successfully", content = @Content)
+    @ApiForbiddenResponse
+    @ApiNotFoundResponse
+    @ApiInternalServerErrorResponse
     @DeleteMapping("/{exerciseId}")
     public ResponseEntity<Void> deleteExercise(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser,

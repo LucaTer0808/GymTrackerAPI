@@ -1,5 +1,9 @@
 package dev.terfehr.gymtrackerapi.controller;
 
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiBadRequestResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiForbiddenResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiInternalServerErrorResponse;
+import dev.terfehr.gymtrackerapi.annotation.openapi.ApiNotFoundResponse;
 import dev.terfehr.gymtrackerapi.dto.ExecutionDTO;
 import dev.terfehr.gymtrackerapi.dto.request.CreateExecutionRequest;
 import dev.terfehr.gymtrackerapi.dto.request.UpdateExecutionRequest;
@@ -7,6 +11,10 @@ import dev.terfehr.gymtrackerapi.model.User;
 import dev.terfehr.gymtrackerapi.service.ExecutionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -32,6 +40,11 @@ public class ExecutionController {
             summary = "Record a new exercise execution",
             description = "Logs a completed exercise session, including all sets, weights, and repetitions for a specific exercise."
     )
+    @ApiResponse(responseCode = "201", description = "Execution created successfully", content = @Content(schema = @Schema(implementation = ExecutionDTO.class)))
+    @ApiBadRequestResponse
+    @ApiForbiddenResponse
+    @ApiNotFoundResponse
+    @ApiInternalServerErrorResponse
     @PostMapping("/exercises/{exerciseId}/executions")
     public ResponseEntity<ExecutionDTO> createExecution(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
@@ -50,6 +63,10 @@ public class ExecutionController {
             summary = "Get execution history for an exercise",
             description = "Retrieves a list of all past performances for a specific exercise belonging to the authenticated user."
     )
+    @ApiResponse(responseCode = "200", description = "Execution history", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ExecutionDTO.class))))
+    @ApiForbiddenResponse
+    @ApiNotFoundResponse
+    @ApiInternalServerErrorResponse
     @GetMapping("/exercises/{exerciseId}/executions")
     public ResponseEntity<List<ExecutionDTO>> getExecutions(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
@@ -66,6 +83,11 @@ public class ExecutionController {
             summary = "Update an execution entry",
             description = "Allows modifying the date or the individual sets (weight/reps) of an existing execution record."
     )
+    @ApiResponse(responseCode = "200", description = "Execution updated successfully", content = @Content(schema = @Schema(implementation = ExecutionDTO.class)))
+    @ApiBadRequestResponse
+    @ApiForbiddenResponse
+    @ApiNotFoundResponse
+    @ApiInternalServerErrorResponse
     @PatchMapping("/executions/{executionId}")
     public ResponseEntity<ExecutionDTO> updateExecution(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
@@ -85,6 +107,10 @@ public class ExecutionController {
             summary = "Delete an execution record",
             description = "Permanently removes a specific execution and its associated sets from the exercise history."
     )
+    @ApiResponse(responseCode = "204", description = "Execution deleted successfully", content = @Content)
+    @ApiForbiddenResponse
+    @ApiNotFoundResponse
+    @ApiInternalServerErrorResponse
     @DeleteMapping("/executions/{executionId}")
     public ResponseEntity<Void> deleteExecution(
             @Parameter(hidden = true) @AuthenticationPrincipal User authUser,
