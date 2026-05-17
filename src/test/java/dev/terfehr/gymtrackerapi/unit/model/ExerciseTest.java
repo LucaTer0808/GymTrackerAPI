@@ -3,6 +3,7 @@ package dev.terfehr.gymtrackerapi.unit.model;
 import dev.terfehr.gymtrackerapi.model.*;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,7 +60,7 @@ class ExerciseTest {
     void shouldAddExecution() {
         Exercise exercise = createExercise();
 
-        Execution execution = exercise.addEmptyExecution();
+        Execution execution = exercise.addEmptyExecution(ZonedDateTime.now());
 
         assertNotNull(execution);
         assertEquals(1, exercise.getExecutions().size());
@@ -69,7 +70,7 @@ class ExerciseTest {
     void shouldDeleteExecution() {
         Exercise exercise = createExercise();
 
-        Execution execution = exercise.addEmptyExecution();
+        Execution execution = exercise.addEmptyExecution(ZonedDateTime.now());
 
         exercise.deleteExecution(execution);
 
@@ -79,7 +80,7 @@ class ExerciseTest {
     @Test
     void shouldFailOnDeletingNonExistingExecution() {
         Exercise exercise = createExercise();
-        Execution fake = new Execution(exercise);
+        Execution fake = new Execution(exercise, ZonedDateTime.now());
 
         assertThrows(AssertionError.class, () ->
                 exercise.deleteExecution(fake)

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -71,8 +72,8 @@ public class Exercise {
     /**
      * Afterward, use the returned object to fill it with sets!
      */
-    public Execution addEmptyExecution() {
-        Execution execution = new Execution(this);
+    public Execution addEmptyExecution(ZonedDateTime dateTime) {
+        Execution execution = new Execution(this, dateTime);
         this.executions.add(execution);
 
         return execution;

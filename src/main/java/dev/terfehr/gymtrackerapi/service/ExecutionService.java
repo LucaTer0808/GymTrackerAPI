@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,14 +31,17 @@ public class ExecutionService {
     private final ExerciseRepositoryI exerciseRepository;
 
     @PreAuthorize("authorizationService.isVerified(principal)")
-    public ExecutionDTO createExecution(User authUser, long exerciseId, List<ExecutionSetRequestDTO> executionSetDTOs) {
+    public ExecutionDTO createExecution(User authUser,
+                                        long exerciseId,
+                                        ZonedDateTime executionDate,
+                                        List<ExecutionSetRequestDTO> executionSetDTOs) {
         Long authUserId = authUser.getId();
         assert  authUserId != null;
 
         Exercise exercise = exerciseRepository.findByIdAndUserId(exerciseId, authUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("The exercise with id: " + exerciseId + " does not exist"));
 
-        Execution execution = exercise.addEmptyExecution();
+        Execution execution = exercise.addEmptyExecution(executionDate);
 
         List<ExecutionSet> executionSets = createExecutionSets(execution, executionSetDTOs);
         execution.setExecutionSets(executionSets);
@@ -66,7 +70,7 @@ public class ExecutionService {
 
     @PreAuthorize("authorizationService.isVerified(principal)")
     public ExecutionDTO updateExecution(User authUser, long executionId,
-                                        @Nullable LocalDate date,
+                                        @Nullable ZonedDateTime executionDate,
                                         @Nullable List<ExecutionSetRequestDTO> executionSetDTOs) throws ResourceNotFoundException {
         Long authUserId = authUser.getId();
         assert  authUserId != null;
@@ -74,8 +78,8 @@ public class ExecutionService {
         Execution execution = executionRepository.findByIdAndExerciseUserId(executionId, authUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("The execution with id: " + executionId + " does not exist"));
 
-        if (date != null) {
-            execution.changeDate(date);
+        if (executionDate != null) {
+            execution.changeDate(executionDate);
         }
 
         if (executionSetDTOs != null) {

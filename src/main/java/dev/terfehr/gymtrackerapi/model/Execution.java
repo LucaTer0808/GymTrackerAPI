@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.jspecify.annotations.NullMarked;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,21 +29,21 @@ public class Execution {
     private Exercise exercise;
 
     @Getter
-    @Column(name = "date", nullable = false)
-    private LocalDate date;
+    @Column(name = "date_time", nullable = false)
+    private ZonedDateTime dateTime;
 
     @Getter
     @Setter
     @OneToMany(mappedBy = "execution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExecutionSet> executionSets;
 
-    public Execution(Exercise exercise) {
+    public Execution(Exercise exercise, ZonedDateTime dateTime) {
         this.exercise = exercise;
-        this.date = LocalDate.now();
+        this.dateTime = dateTime;
         this.executionSets = new ArrayList<>(); // add sets before persisting!
     }
 
-    public void changeDate(LocalDate date) {
-        this.date = date;
+    public void changeDate(ZonedDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 }

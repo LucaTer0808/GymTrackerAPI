@@ -5,10 +5,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public record UpdateExecutionRequest(
-        LocalDate date,
+        ZonedDateTime executionDate,
 
         @Size(min = 1, message = "Please include at least one set in your request!")
         @ValidExecutionSetNumbers(message = "The list of sets does not contain a valid order of numbers within the execution")

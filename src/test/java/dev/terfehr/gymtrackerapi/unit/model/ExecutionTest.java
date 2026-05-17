@@ -3,7 +3,8 @@ package dev.terfehr.gymtrackerapi.unit.model;
 import dev.terfehr.gymtrackerapi.model.*;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,7 +26,7 @@ class ExecutionTest {
     }
 
     private Execution createExecution() {
-        return new Execution(createExercise());
+        return new Execution(createExercise(), ZonedDateTime.now());
     }
 
     @Test
@@ -33,7 +34,7 @@ class ExecutionTest {
         Execution execution = createExecution();
 
         assertNotNull(execution.getExercise());
-        assertNotNull(execution.getDate());
+        assertNotNull(execution.getDateTime());
         assertNotNull(execution.getExecutionSets());
 
         assertTrue(execution.getExecutionSets().isEmpty());
@@ -41,26 +42,27 @@ class ExecutionTest {
 
     @Test
     void shouldSetDateToTodayOnCreation() {
-        Execution execution = createExecution();
+        ZonedDateTime now = ZonedDateTime.now();
+        Execution execution = new Execution(createExercise(), now);
 
-        assertEquals(LocalDate.now(), execution.getDate());
+        assertEquals(now, execution.getDateTime());
     }
 
     @Test
     void shouldChangeDate() {
         Execution execution = createExecution();
 
-        LocalDate newDate = LocalDate.of(2020, 1, 1);
+        ZonedDateTime newDate = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.systemDefault());
         execution.changeDate(newDate);
 
-        assertEquals(newDate, execution.getDate());
+        assertEquals(newDate, execution.getDateTime());
     }
 
     @Test
     void shouldBindExerciseCorrectly() {
         Exercise exercise = createExercise();
 
-        Execution execution = new Execution(exercise);
+        Execution execution = new Execution(exercise, ZonedDateTime.now());
 
         assertSame(exercise, execution.getExercise());
     }

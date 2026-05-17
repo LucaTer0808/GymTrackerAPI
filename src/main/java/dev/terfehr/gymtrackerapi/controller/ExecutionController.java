@@ -53,6 +53,7 @@ public class ExecutionController {
         ExecutionDTO dto = executionService.createExecution(
                 authUser,
                 exerciseId,
+                request.executionDate(),
                 request.executionSets()
         );
 
@@ -96,7 +97,7 @@ public class ExecutionController {
         ExecutionDTO dto = executionService.updateExecution(
                 authUser,
                 executionId,
-                request.date(),
+                request.executionDate(),
                 request.executionSets()
         );
 

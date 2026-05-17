@@ -3,6 +3,8 @@ package dev.terfehr.gymtrackerapi.unit.model;
 import dev.terfehr.gymtrackerapi.model.*;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZonedDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExecutionSetTest {
@@ -24,7 +26,7 @@ class ExecutionSetTest {
 
     private Execution createExecution() {
         Exercise exercise = createExercise();
-        return new Execution(exercise);
+        return new Execution(exercise, ZonedDateTime.now());
     }
 
     private ExecutionSet createSet() {

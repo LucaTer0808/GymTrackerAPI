@@ -1,11 +1,13 @@
 package dev.terfehr.gymtrackerapi.service;
 
 import dev.terfehr.gymtrackerapi.dto.ExerciseDTO;
+import dev.terfehr.gymtrackerapi.dto.ExerciseDateTuple;
 import dev.terfehr.gymtrackerapi.dto.ExerciseWithoutExecutionDTO;
 import dev.terfehr.gymtrackerapi.exception.DatabaseConflictException;
 import dev.terfehr.gymtrackerapi.exception.ResourceNotFoundException;
 import dev.terfehr.gymtrackerapi.model.Exercise;
 import dev.terfehr.gymtrackerapi.model.User;
+import dev.terfehr.gymtrackerapi.repository.ExecutionRepositoryI;
 import dev.terfehr.gymtrackerapi.repository.ExerciseRepositoryI;
 import dev.terfehr.gymtrackerapi.repository.UserRepositoryI;
 import jakarta.transaction.Transactional;
@@ -15,8 +17,11 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @NullMarked
@@ -43,8 +48,10 @@ public class ExerciseService {
     public List<ExerciseDTO> getExercises(User authUser) {
         List<ExerciseDTO> exerciseDTOs = new ArrayList<>();
 
-        for (Exercise exercise : authUser.getExercises()) {
-            exerciseDTOs.add(new ExerciseDTO(exercise));
+        Set<ExerciseDateTuple> exerciseDateTuples = exerciseRepository.findExercisesWithLatestDateOfExecutionByUser(authUser);
+
+        for (ExerciseDateTuple exercise : exerciseDateTuples) {
+            exerciseDTOs.add(new ExerciseDTO(exercise.exercise(), exercise.dateTime()));
         }
 
         return exerciseDTOs;

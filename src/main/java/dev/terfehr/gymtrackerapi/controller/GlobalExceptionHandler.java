@@ -132,7 +132,7 @@ public class GlobalExceptionHandler {
                                               String detail,
                                               URI type,
                                               HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail == null || detail.isBlank() ? status.getReasonPhrase() : detail);
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail.isBlank() ? status.getReasonPhrase() : detail);
         problem.setTitle(title);
         problem.setType(type);
         problem.setInstance(URI.create(request.getRequestURI()));
